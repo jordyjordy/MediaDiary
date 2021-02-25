@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <i class="gargantuan material-icons">account_circle</i>
+    <img src="../src/assets/logo.svg" />
     <HelloWorld msg="Welcome to the MediaDiary App" />
     <Login />
   </div>
