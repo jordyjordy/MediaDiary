@@ -6,16 +6,17 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
 import HelloWorld from "./components/HelloWorld.vue";
 import Login from "./components/Login.vue";
-export default {
-  name: "App",
+@Component({
   components: {
     HelloWorld,
     Login,
   },
-};
+})
+export default class App extends Vue {}
 </script>
 
 <style>
@@ -29,5 +30,3 @@ export default {
 }
 .gargantuan {
   font-size: 250px;
-}
-</style>
