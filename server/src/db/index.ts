@@ -19,10 +19,8 @@ var query = (text: string, params: String[], callback: any) => {
         callback(err, res)
     })
 }
-var getClient = (callback: ClientAction) => {
-    pool.connect((err, client, done) => {
-        callback(err, client, done)
-    })
+var getClient = async () => {
+    return await pool.connect()
 }
 var db = { query, getClient }
 export { db as default }

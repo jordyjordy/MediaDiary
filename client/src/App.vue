@@ -30,3 +30,5 @@ export default class App extends Vue {}
 }
 .gargantuan {
   font-size: 250px;
+}
+</style>
