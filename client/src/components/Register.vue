@@ -3,7 +3,7 @@
     <div class="col push-m3 push-l3 s12 m6 l6">
       <div class="card blue-grey darken-1">
         <div class="card-content row">
-          <span class="card-title white-text">Login</span>
+          <span class="card-title white-text">Register</span>
           <div class="input-field col s10 push-s1">
             <input
               placeholder="example@example.com"
@@ -24,10 +24,6 @@
           </div>
           <div class="col s12 push-s1 push-m1 m12 l6 push-l1">
             <div class="row">
-              <a class="btn waves-effect waves-light col s4" name="login" v-on:click="login" >
-                Log In
-                <i class="material-icons right">send</i>
-              </a>
               <a class="waves-effect waves-light btn col s5 push-s1">
                 Register
                 <i class="material-icons right">person_add</i>
@@ -40,18 +36,15 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+<script>
+import M from "materialize-css";
 import "materialize-css";
 import "materialize-css/dist/css/materialize.css";
-
-@Component
-export default class Login extends Vue {
-  login() {
-    console.log("Logging in")
-  }
-}
-
+export default {
+  mounted() {
+    M.AutoInit();
+  },
+};
 </script>
 <style scoped>
 </style>
