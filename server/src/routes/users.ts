@@ -1,6 +1,6 @@
 import express from 'express'
 import db from "../db/index"
-import { sign, verify } from "jsonwebtoken"
+import { sign } from "jsonwebtoken"
 import auth from '../config/auth'
 var router = express.Router()
 

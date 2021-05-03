@@ -3,6 +3,9 @@
         <button v-on:click="logout">logout</button>
         <button v-on:click="record">record</button>
         <button v-on:click="stopRecording">stop recording</button>
+        <input type="file" v-on:change="displayimages($event)" accept="image/*" multiple />
+        <button v-on:click="send">Submit</button>
+        <img v-for="image in images" :key="image.src" :src="image.src" :alt="image.src" />
     </div>
 </template>
 
@@ -21,6 +24,7 @@ import {MediaRecorder} from 'extendable-media-recorder'
 export default class Log extends Vue {
     mediaRecorder:any = {}
     audioChunks:Blob[] = []
+    images:any[] = []
     stream:any = null
     
     logout() {
@@ -53,6 +57,16 @@ export default class Log extends Vue {
     stopRecording() {
         this.stream.getTracks().forEach((track:any) => track.stop())
         this.mediaRecorder.stop()
+    }
+    displayimages(event:any) {
+        var images:any[] = []
+        for(var i = 0; i < event.target.files.length;i++) {
+            images.push({src:window.URL.createObjectURL(event.target.files[i])})
+        }
+        this.images = images
+    }
+    send() {
+
     }
 }
 
