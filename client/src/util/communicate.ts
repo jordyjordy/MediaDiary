@@ -22,8 +22,22 @@ async function register(email: string, pass: string) {
     return res
 }
 async function verify() {
-    var res = await axios.get(process.env.VUE_APP_SERVER_IP + '/users/verify', { headers: { Authorization: localStorage.getItem("token") } })
+    await axios.get(process.env.VUE_APP_SERVER_IP + '/users/verify', { headers: { Authorization: localStorage.getItem("token") } })
 }
 
-export default { login, register, verify }
-export { login, register, verify }
+async function upload(files: any[], date: Date) {
+    let formData = new FormData()
+    for (var i = 0; i < files.length; i++) {
+        formData.append("file", files[i])
+    }
+    formData.append("date", date.toString())
+    var res = await axios.post(process.env.VUE_APP_SERVER_IP + '/log/submit', formData, {
+        headers: {
+            "Content-type": "multipart/form-data",
+            Authorization: localStorage.getItem("token")
+        }
+    })
+}
+
+export default { login, register, verify, upload }
+export { login, register, verify, upload }
