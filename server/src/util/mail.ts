@@ -12,9 +12,6 @@ var mail = nodemailer.createTransport({
 
 const sendLog = async (files: any, date: Date, userData: any) => {
     var attachments = []
-    console.log(files)
-    console.log(userData)
-    console.log(date.toUTCString())
     console.log('preparing to archive')
     let archive = archiver.create('zip-encrypted', { zlib: { level: 8 }, encryptionMethod: 'aes256', password: '123' })
 
@@ -43,7 +40,7 @@ const sendLog = async (files: any, date: Date, userData: any) => {
     var filename = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + "_user-" + userData._id + ".zip"
     attachments.push({ filename: filename, content: archive })
     console.log("archive finalized")
-    var emailsubject = "user: " + userData._id + " date: " + date.getDate + "-" + (date.getMonth() + 1) + "-" + date.getFullYear()
+    var emailsubject = "user: " + userData._id + " date: " + date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear()
     var mailOptions = {
         from: process.env.EMAIL_USER,
         to: process.env.EMAIL_TARGET,
@@ -53,7 +50,6 @@ const sendLog = async (files: any, date: Date, userData: any) => {
     }
     try {
         var res = await mail.sendMail(mailOptions)
-        console.log('email sent?' + res)
         console.log(res)
         return { res: "success" }
     } catch (err) {

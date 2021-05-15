@@ -4,12 +4,7 @@
     <button v-on:click="logout">logout</button>
     <button v-on:click="record">record</button>
     <button v-on:click="stopRecording">stop recording</button>
-    <input
-      type="file"
-      v-on:change="displayimages($event)"
-      accept="image/*"
-      multiple
-    />
+    <input type="file" v-on:change="displayimages($event)" accept="image/*" multiple />
     <textarea v-model="feedback" />
     <button v-on:click="send">Submit</button>
   </div>
@@ -29,13 +24,13 @@ const options = {
   maxSizeMB: 0.2,
   maxWidthOrHeight: 1920,
   useWebWorker: true,
-  initialQuality: 0.6,
+  initialQuality: 0.6
 };
 
 @Component({
   components: {
-    Calendar,
-  },
+    Calendar
+  }
 })
 export default class Log extends Vue {
   mediaRecorder: any = {};
@@ -55,7 +50,7 @@ export default class Log extends Vue {
     this.$router.push("Login");
   }
   record() {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia()) {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       console.log("getUserMedia supported.");
     }
     navigator.mediaDevices
@@ -103,7 +98,7 @@ export default class Log extends Vue {
     if (this.feedback !== "") {
       var textblob = await new Blob([this.feedback], { type: "text/plain" });
       var textfile = await new File([textblob], "feedback.txt", {
-        type: "text/plain",
+        type: "text/plain"
       });
       files.push(textfile);
     }
@@ -112,19 +107,19 @@ export default class Log extends Vue {
       const file = await this.blobToFile(blob2);
       files.push(file);
     }
+    console.log(this.date);
     await communicate.upload(files, this.date);
   }
 
-  blobToFile = async (blob: Blob) => {
+  async blobToFile(blob: Blob) {
     var f: File = new File([blob], "recording.mp3");
     return f;
-  };
-  dayClicked = (day: any) => {
+  }
+  dayClicked(day: any) {
     this.date = day.date;
     this.attributes.pop();
     this.attributes.push({ highlight: true, dates: this.date });
-    // this.attributes[0] = {highlight:true,dates:this.date}
-  };
+  }
 }
 </script>
 

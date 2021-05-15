@@ -8,6 +8,8 @@ router.post('/submit', auth, async (req, res) => {
     var request: any = req
     //console.log(req)
     let date = req.body.date as string
+    console.log(date)
+    console.log(new Date(date))
     let temp = req.files?.file as UploadedFile[]
     var result = await mail.sendLog(temp, new Date(date), request.userData)
     if (!result.err) {
