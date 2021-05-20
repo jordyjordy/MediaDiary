@@ -35,26 +35,21 @@ router.post('/register', encrypt, async (req, res) => {
 })
 
 router.post('/login', async (req, res) => {
-    console.log("someone trying to log in")
     const client = await db.getClient();
     try {
-        console.log('connected to client')
         await client.query('BEGIN')
         var result = await client.query('SELECT id FROM users WHERE email=$1', [req.body.email])
         var passres = await client.query("SELECT password from passwords where user_id=$1", [result.rows[0].id])
         if (await bcrypt.compare(req.body.password, passres.rows[0].password)) {
             var token = sign({ _id: result.rows[0].id, "email": req.params.email }, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_TIMEOUT })
             res.status(201).json({ token })
-            console.log('logged in!')
         } else {
-            console.log("not logged in!")
             res.status(401).send
         }
         client.query("COMMIT")
     } catch (e) {
         client.query("ROLLBACK")
         res.status(401).json("bad credentials")
-        console.log("log in failed")
     } finally {
         client.release()
     }

@@ -16,6 +16,12 @@
         <div v-for="(recording,index) in recordings" :key="index" class="rec-el">
           RECORDING {{recording.id}}
           <br />
+          <button v-if="playbackid!=index" class="rec-play" @click="playRecording(index)">Listen</button>
+          <button
+            v-if="playbackid == index && playback"
+            class="rec-play"
+            @click="stopPlaying()"
+          >Stop</button>
           <button class="rec-del" @click="deleteRecording(index)">Delete</button>
         </div>
       </div>
@@ -95,6 +101,8 @@ export default class Log extends Vue {
   isSending: boolean = false;
   showPopup: boolean = false;
   popupText: string = "dummy text";
+  playback: boolean = false;
+  playbackid: number = -1;
 
   async mounted() {
     this.attributes.push({ highlight: true, dates: this.date });
@@ -103,9 +111,6 @@ export default class Log extends Vue {
   }
 
   record() {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      console.log("getUserMedia supported.");
-    }
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream: MediaStream) => {
@@ -114,26 +119,18 @@ export default class Log extends Vue {
         this.mediaRecorder.start();
         this.recording = true;
         this.mediaRecorder.addEventListener("dataavailable", (event: any) => {
-          console.log("data available");
           this.audioChunks.push(event.data);
           if (!this.recording) {
             this.recordings.push({
               data: this.audioChunks,
               id: this.recordingid
             });
-            this.recordingid++;
-            var audioBlob = new Blob(this.audioChunks, { type: "audio/mp3;" });
-            const audioUrl = URL.createObjectURL(audioBlob);
             this.audioChunks = [];
-            const audio = new Audio(audioUrl);
-            audio.crossOrigin = "anonymous";
-            audio.play();
+            this.recordingid++;
           }
         });
-        this.mediaRecorder.addEventListener("stop", (event: any) => {
+        this.mediaRecorder.addEventListener("stop", () => {
           this.recording = false;
-          console.log("finished recording");
-          console.log(event.name);
         });
       });
   }
@@ -201,7 +198,6 @@ export default class Log extends Vue {
       this.popupText =
         "Something went wrong on our end, please try again later! \n Sorry for the inconvenience!";
     } else {
-      console.log(res);
       this.popupText =
         "We can't reach the server, please try again later! \n Sorry for the inconvenience!";
     }
@@ -224,6 +220,29 @@ export default class Log extends Vue {
   }
   closePopup() {
     this.showPopup = false;
+  }
+  playRecording(index: number) {
+    this.stopPlaying();
+    var audioBlob = new Blob(this.recordings[index].data, {
+      type: "audio/mp3;"
+    });
+    const audioUrl = URL.createObjectURL(audioBlob);
+    this.audio = new Audio(audioUrl);
+    this.audio.crossOrigin = "anonymous";
+    this.audio.addEventListener("ended", () => {
+      this.stopPlaying();
+    });
+    this.audio.play();
+    this.playback = true;
+    this.playbackid = index;
+  }
+  stopPlaying() {
+    if (this.audio != null) {
+      this.audio.pause();
+      this.audio.currentTime = 0;
+      this.playback = false;
+      this.playbackid = -1;
+    }
   }
 }
 </script>

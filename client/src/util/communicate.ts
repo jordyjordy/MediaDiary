@@ -30,7 +30,6 @@ async function upload(files: any[], date: string) {
     for (var i = 0; i < files.length; i++) {
         formData.append("file", files[i])
     }
-    console.log(files.length)
     formData.append("date", date)
     var res = await axios.post(process.env.VUE_APP_SERVER_IP + '/log/submit', formData, {
         headers: {

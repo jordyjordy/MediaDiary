@@ -32,7 +32,6 @@ var createSchema = async function () {
     )
     await pool.query(schema, async (err, res) => {
         if (err === undefined) {
-            console.log("success!")
         } else {
             console.log(err)
             console.log("something went wrong creating database, removing it again")

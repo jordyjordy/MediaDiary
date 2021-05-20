@@ -8,17 +8,14 @@ import db from "../db/index"
 var router = express.Router()
 
 router.post('/submit', auth, async (req, res) => {
-    console.log('trying to submit log')
     var request: any = req
     let date = req.body.date as string
     let temp = req.files?.file as UploadedFile[]
     const client = await db.getClient()
 
     try {
-        console.log()
         await client.query("BEGIN")
         var survey = await client.query('SELECT * FROM surveys LIMIT 1')
-        console.log(survey.rows[0])
         var result = await mail.sendLog(temp, date, request.userData, survey.rows[0].response_email, survey.rows[0].public_key)
         if (!result.err) {
             res.status(200).send()
