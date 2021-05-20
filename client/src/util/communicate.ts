@@ -5,7 +5,7 @@ axios.interceptors.response.use(
         return response
     },
     error => {
-        if (error.response.status == 401) {
+        if (error.response && error.response.status == 401) {
             localStorage.removeItem("token")
         }
         return error
@@ -38,6 +38,7 @@ async function upload(files: any[], date: string) {
             Authorization: localStorage.getItem("token")
         }
     })
+    return res
 }
 async function requestSurvey() {
     var res = await axios.get(process.env.VUE_APP_SERVER_IP + '/surveys/log', { headers: { Authorization: localStorage.getItem("token") } })

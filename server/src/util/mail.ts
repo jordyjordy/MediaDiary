@@ -17,13 +17,10 @@ var mail = nodemailer.createTransport({
 
 const sendLog = async (files: any, date: string, userData: any, targetemail: string, public_key: string) => {
     var attachments = []
-    console.log('preparing to archive')
     var pass = await token.generateToken()
     let archive = archiver.create('zip-encrypted', { zlib: { level: 8 }, encryptionMethod: 'aes256', password: pass })
     var key = new NodeRSA()
-    console.log(public_key)
     key.importKey(public_key, 'openssh-public')
-    console.log('encrypting password')
     var encryptedpass = key.encrypt(pass, 'base64')
     archive.on('warning', (err: any) => {
         console.log('warning')
@@ -34,7 +31,6 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
         console.log(err)
     })
     if (!files) {
-        console.log("no files attached..")
         return { err: "no_files" }
     }
     else if (!files.length) {
@@ -45,13 +41,11 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
             archive.append(files[i].data, { name: files[i].name })
         }
     }
-    console.log('appended files to archive')
     var res = await archive.finalize()
     var tokenname = date + "_user-" + userData._id + ".txt"
     attachments.push({ filename: tokenname, content: encryptedpass })
     var filename = date + "_user-" + userData._id + ".zip"
     attachments.push({ filename: filename, content: archive })
-    console.log("archive finalized")
     var emailsubject = "user: " + userData._id + " date: " + date
     var mailOptions = {
         from: process.env.EMAIL_USER,
@@ -62,7 +56,6 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
     }
     try {
         var res = await mail.sendMail(mailOptions)
-        console.log(res)
         return { res: "success" }
     } catch (err) {
         console.log('could not send email')

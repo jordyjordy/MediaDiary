@@ -1,5 +1,7 @@
 <template>
   <div>
+    <Popup :visible="showPopup" :message="popupText" @close="closePopup()" />
+    <loading :active="isSending" :can-cancel="true" :is-full-page="true" />
     <p>{{description}}</p>
     <div class="rec-div">
       <p>Record a voice message:</p>
@@ -41,7 +43,7 @@
       </div>
     </div>
     <p>Write some text:</p>
-    <textarea v-model="feedback" />
+    <textarea class="text-ar" v-model="feedback" />
     <p>Pick the correct date</p>
     <Calendar class="center" @dayclick="dayClicked" :attributes="attributes" />
     <br />
@@ -52,6 +54,10 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+//@ts-ignore
+import Loading from "vue-loading-overlay";
+import Popup from "../components/Popup.vue";
+import "vue-loading-overlay/dist/vue-loading.css";
 import "materialize-css";
 import "materialize-css/dist/css/materialize.css";
 import { MediaRecorder } from "extendable-media-recorder";
@@ -68,7 +74,9 @@ const options = {
 
 @Component({
   components: {
-    Calendar
+    Calendar,
+    Loading,
+    Popup
   }
 })
 export default class Log extends Vue {
@@ -84,6 +92,9 @@ export default class Log extends Vue {
   feedback: string = "";
   description: string = "Description is being loaded";
   recordingid: number = 0;
+  isSending: boolean = false;
+  showPopup: boolean = false;
+  popupText: string = "dummy text";
 
   async mounted() {
     this.attributes.push({ highlight: true, dates: this.date });
@@ -148,6 +159,7 @@ export default class Log extends Vue {
     });
   }
   async send() {
+    this.isSending = true;
     var files: File[] = [];
     for (var i = 0; i < this.images.length; i++) {
       var tempimg = this.images[i];
@@ -175,7 +187,25 @@ export default class Log extends Vue {
       (this.date.getMonth() + 1) +
       "-" +
       this.date.getFullYear();
-    await communicate.upload(files, date);
+    var res = await communicate.upload(files, date);
+    this.showPopup = true;
+    if (res.status && res.status == 200) {
+      this.popupText = "Thank you for filling in the Survey!";
+      this.recordings = [];
+      this.images = [];
+      this.feedback = "";
+      this.date = new Date();
+    } else if (res.toString().match(/406/i)) {
+      this.popupText = "Something went wrong, are you sure you included data?";
+    } else if (res.toString().match(/500/i)) {
+      this.popupText =
+        "Something went wrong on our end, please try again later! \n Sorry for the inconvenience!";
+    } else {
+      console.log(res);
+      this.popupText =
+        "We can't reach the server, please try again later! \n Sorry for the inconvenience!";
+    }
+    this.isSending = false;
   }
   deleteRecording(index: number) {
     this.recordings.splice(index, 1);
@@ -191,6 +221,9 @@ export default class Log extends Vue {
     this.date = day.date;
     this.attributes.pop();
     this.attributes.push({ highlight: true, dates: this.date });
+  }
+  closePopup() {
+    this.showPopup = false;
   }
 }
 </script>
@@ -252,5 +285,11 @@ export default class Log extends Vue {
   border: 1px black solid;
   position: relative;
   overflow: hidden;
+}
+
+.text-ar {
+  height: 20vh;
+  overflow-y: scroll;
+  resize: none;
 }
 </style>

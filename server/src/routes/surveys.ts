@@ -9,6 +9,7 @@ router.get('/log', auth, async (req, res) => {
     const client = await db.getClient();
     var description = await client.query('SELECT description,public_key FROM surveys LIMIT 1')
     res.status(200).send(description.rows[0])
+    client.release()
 })
 
 export = router

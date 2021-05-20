@@ -52,6 +52,7 @@ var createSchema = async function () {
 
         }
     })
+    pool.end()
 }
 
 export { prepare }
