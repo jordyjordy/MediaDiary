@@ -53,7 +53,7 @@
     <p>Pick the correct date</p>
     <Calendar class="center" @dayclick="dayClicked" :attributes="attributes" />
     <br />
-    <button v-on:click="send">Submit</button>
+    <button class="submit" v-on:click="send">Submit</button>
   </div>
 </template>
 
@@ -265,23 +265,43 @@ export default class Log extends Vue {
   overflow-x: scroll;
   white-space: nowrap;
   clear: both;
-  height: 100px;
-  width: 100vw;
-  border: 2px solid Black;
+  height: 110px;
+  width: calc(100%-2em);
+  border: 1px solid lightgray;
+  border-radius: 1em;
+  margin: 1em;
+  padding: 0;
 }
 .rec-el {
   padding: 2%;
-  margin: 1%;
-  height: 92%;
+  margin: 0;
+  height: 90px;
+  width: 120px;
   display: inline-block;
-  border: 1px black solid;
+  border: 1px gray solid;
+  background-color: rgb(228, 228, 228);
   position: relative;
+  border-radius: 1em;
 }
-.rec-del,
+
 .img-del {
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom: 5px;
+  right: 5px;
+}
+.rec-del {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  height: 40px;
+  width: 50px;
+}
+.rec-play {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  height: 40px;
+  width: 50px;
 }
 .rec img {
   float: right;
@@ -301,14 +321,29 @@ export default class Log extends Vue {
   height: 90px;
   width: 60px;
   display: inline-block;
-  border: 1px black solid;
+  border: 1px gray solid;
+  border-radius: 1em;
+  background-color: rgb(230, 230, 230);
   position: relative;
   overflow: hidden;
 }
 
 .text-ar {
+  margin: 3%;
+  width: 94%;
+  border: 1px solid lightgray;
+  border-radius: 1em;
   height: 20vh;
   overflow-y: scroll;
   resize: none;
+}
+
+.submit {
+  height: 80px;
+  width: 200px;
+  font-size: 20pt;
+}
+button {
+  border-radius: 0.5em;
 }
 </style>

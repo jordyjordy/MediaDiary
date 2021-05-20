@@ -22,4 +22,19 @@ export default class App extends Vue {}
 .gargantuan {
   font-size: 250px;
 }
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  overflow-x: hidden;
+}
+button,
+input {
+  background-color: rgb(28, 99, 230);
+  color: white;
+  border: 1px white;
+  border-style: double;
+}
 </style>

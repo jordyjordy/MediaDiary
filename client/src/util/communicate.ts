@@ -12,13 +12,13 @@ axios.interceptors.response.use(
     }
 )
 
-async function login(email: string, pass: string) {
-    var res = await axios.post(process.env.VUE_APP_SERVER_IP + '/users/login', { email: email, password: pass })
+async function login(user: string, pass: string) {
+    var res = await axios.post(process.env.VUE_APP_SERVER_IP + '/users/login', { user: user, password: pass })
     return res
 }
 
-async function register(email: string, pass: string) {
-    var res = await axios.post(process.env.VUE_APP_SERVER_IP + '/users/register', { email: email, password: pass, canemail: false })
+async function register(user: string, email: string, pass: string, allowemails: boolean, consented: boolean) {
+    var res = await axios.post(process.env.VUE_APP_SERVER_IP + '/users/register', { user: user, email: email, password: pass, canemail: allowemails, consented: consented })
     return res
 }
 async function verify() {

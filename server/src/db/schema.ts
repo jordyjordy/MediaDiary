@@ -2,10 +2,12 @@ var schema = `
 CREATE TABLE public.users
 (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
-    email character varying(40) COLLATE pg_catalog."default" NOT NULL,
+    username TEXT NOT NULL,
+    email character varying(40),
     can_email boolean NOT NULL,
+    consented boolean NOT NULL,
     CONSTRAINT users_pkey PRIMARY KEY (id),
-    CONSTRAINT unique_email UNIQUE (email)
+    CONSTRAINT unique_email UNIQUE (username)
 )
 
 TABLESPACE pg_default;
@@ -47,6 +49,26 @@ CREATE TABLE public.passwords
 TABLESPACE pg_default;
 
 ALTER TABLE public.passwords
+    OWNER to ${process.env.DB_USER};
+
+CREATE TABLE public.userssurveys
+(
+    user_id integer NOT NULL,
+    survey_id integer NOT NULL,
+    CONSTRAINT usersurveys_pkey PRIMARY KEY(user_id,survey_id),
+    CONSTRAINT fk_usersurveys_user FOREIGN KEY(user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT fk_usersyrveys_survey FOREIGN KEY(survey_id)
+        REFERENCES public.surveys (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.userssurveys
     OWNER to ${process.env.DB_USER};
 
 CREATE TABLE public.answers

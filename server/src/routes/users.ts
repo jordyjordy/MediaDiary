@@ -12,8 +12,10 @@ router.post('/register', encrypt, async (req, res) => {
     const client = await db.getClient()
     try {
         await client.query('BEGIN')
-        var result = await client.query('INSERT INTO users (email , can_email) VALUES ($1, $2) returning id', [req.body.email, req.body.canemail])
+        var result = await client.query('INSERT INTO users (username, email, can_email, consented) VALUES ($1, $2, $3, $4) returning id', [req.body.user, req.body.email, req.body.canemail, req.body.consented])
         await client.query('INSERT INTO passwords (user_id, password) VALUES ($1, $2)', [result.rows[0].id, req.body.password])
+        var surveyid = await client.query('SELECT id FROM surveys ORDER BY id LIMIT 1')
+        await client.query('INSERT INTO userssurveys (user_id,survey_id) VALUES ($1,$2)', [result.rows[0].id, surveyid.rows[0].id])
         await client.query('COMMIT')
         res.send('succes')
     } catch (e) {
@@ -38,7 +40,7 @@ router.post('/login', async (req, res) => {
     const client = await db.getClient();
     try {
         await client.query('BEGIN')
-        var result = await client.query('SELECT id FROM users WHERE email=$1', [req.body.email])
+        var result = await client.query('SELECT id FROM users WHERE username=$1', [req.body.user])
         var passres = await client.query("SELECT password from passwords where user_id=$1", [result.rows[0].id])
         if (await bcrypt.compare(req.body.password, passres.rows[0].password)) {
             var token = sign({ _id: result.rows[0].id, "email": req.params.email }, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_TIMEOUT })
