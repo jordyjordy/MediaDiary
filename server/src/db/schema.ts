@@ -18,11 +18,14 @@ CREATE TABLE public.surveys
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     owner_id integer NOT NULL,
     start_date DATE NOT NULL,
+    description TEXT NOT NULL,
+    public_key TEXT NOT NULL,
+    response_email TEXT NOT NULL,
     CONSTRAINT survey_pkey PRIMARY KEY (id),
     CONSTRAINT fk_owner FOREIGN KEY (owner_id)
         REFERENCES public.users (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 )
 
 TABLESPACE pg_default;
@@ -37,8 +40,8 @@ CREATE TABLE public.passwords
     CONSTRAINT passwords_pkey PRIMARY KEY (user_id),
     CONSTRAINT fk_user FOREIGN KEY (user_id)
         REFERENCES public.users (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 )
 
 TABLESPACE pg_default;
@@ -56,12 +59,12 @@ CREATE TABLE public.answers
     CONSTRAINT answers_pkey PRIMARY KEY (id),
     CONSTRAINT fk_answer_user FOREIGN KEY (user_id)
         REFERENCES public.users (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     CONSTRAINT fk_survey FOREIGN KEY (survey_id)
         REFERENCES public.surveys (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 )
 
 TABLESPACE pg_default;

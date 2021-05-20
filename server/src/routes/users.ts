@@ -2,14 +2,15 @@ import express from 'express'
 import db from "../db/index"
 import { sign } from "jsonwebtoken"
 import auth from '../config/auth'
+import bcrypt from 'bcrypt'
+import encrypt from '../config/encrypt'
 var router = express.Router()
 
 // TODO: 
 // This method needs to become a POST
-router.post('/register', async (req, res) => {
+router.post('/register', encrypt, async (req, res) => {
     const client = await db.getClient()
     try {
-        console.log(req.body)
         await client.query('BEGIN')
         var result = await client.query('INSERT INTO users (email , can_email) VALUES ($1, $2) returning id', [req.body.email, req.body.canemail])
         await client.query('INSERT INTO passwords (user_id, password) VALUES ($1, $2)', [result.rows[0].id, req.body.password])
@@ -41,11 +42,12 @@ router.post('/login', async (req, res) => {
         await client.query('BEGIN')
         var result = await client.query('SELECT id FROM users WHERE email=$1', [req.body.email])
         var passres = await client.query("SELECT password from passwords where user_id=$1", [result.rows[0].id])
-        if (passres.rows[0].password === req.body.password) {
-            console.log(result.rows[0].id)
+        if (await bcrypt.compare(req.body.password, passres.rows[0].password)) {
             var token = sign({ _id: result.rows[0].id, "email": req.params.email }, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_TIMEOUT })
             res.status(201).json({ token })
+            console.log('logged in!')
         } else {
+            console.log("not logged in!")
             res.status(401).send
         }
         client.query("COMMIT")
@@ -61,4 +63,5 @@ router.post('/login', async (req, res) => {
 router.get('/verify', auth, async (req, res) => {
     res.status(200).send()
 })
+
 export = router

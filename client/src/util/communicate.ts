@@ -25,13 +25,13 @@ async function verify() {
     await axios.get(process.env.VUE_APP_SERVER_IP + '/users/verify', { headers: { Authorization: localStorage.getItem("token") } })
 }
 
-async function upload(files: any[], date: Date) {
+async function upload(files: any[], date: string) {
     let formData = new FormData()
     for (var i = 0; i < files.length; i++) {
         formData.append("file", files[i])
     }
-    console.log(date.toString())
-    formData.append("date", date.toString())
+    console.log(files.length)
+    formData.append("date", date)
     var res = await axios.post(process.env.VUE_APP_SERVER_IP + '/log/submit', formData, {
         headers: {
             "Content-type": "multipart/form-data",
@@ -39,6 +39,10 @@ async function upload(files: any[], date: Date) {
         }
     })
 }
+async function requestSurvey() {
+    var res = await axios.get(process.env.VUE_APP_SERVER_IP + '/surveys/log', { headers: { Authorization: localStorage.getItem("token") } })
+    return res.data
+}
 
-export default { login, register, verify, upload }
-export { login, register, verify, upload }
+export default { login, register, verify, upload, requestSurvey }
+export { login, register, verify, upload, requestSurvey }

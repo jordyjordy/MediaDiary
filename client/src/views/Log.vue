@@ -1,11 +1,50 @@
 <template>
   <div>
-    <Calendar class="center" @dayclick="dayClicked" :attributes="attributes" />
-    <button v-on:click="logout">logout</button>
-    <button v-on:click="record">record</button>
-    <button v-on:click="stopRecording">stop recording</button>
-    <input type="file" v-on:change="displayimages($event)" accept="image/*" multiple />
+    <p>{{description}}</p>
+    <div class="rec-div">
+      <p>Record a voice message:</p>
+      <button v-on:click="record">record</button>
+      <button v-on:click="stopRecording">stop recording</button>
+      <div class="rec">
+        <b>recording:</b>
+        <img v-if="recording" src="../assets/rec.svg" />
+        <img v-if="!recording" src="../assets/rec-off.svg" />
+      </div>
+      <div class="rec-disp">
+        <div v-for="(recording,index) in recordings" :key="index" class="rec-el">
+          RECORDING {{recording.id}}
+          <br />
+          <button class="rec-del" @click="deleteRecording(index)">Delete</button>
+        </div>
+      </div>
+    </div>
+    <div class="images">
+      <p>Upload Images:</p>
+      <input
+        type="file"
+        v-on:change="addImages($event)"
+        accept="image/*"
+        style="display:none;"
+        id="selectedFile"
+        multiple
+      />
+      <input
+        type="button"
+        value="Add Images"
+        onclick="document.getElementById('selectedFile').click();"
+      />
+      <div class="img-disp">
+        <div v-for="(image,index) in images" :key="index" class="img-el">
+          <img class="img-back" :src="image.image" />
+          <button class="img-del" @click="deleteImage(index)">Delete</button>
+        </div>
+      </div>
+    </div>
+    <p>Write some text:</p>
     <textarea v-model="feedback" />
+    <p>Pick the correct date</p>
+    <Calendar class="center" @dayclick="dayClicked" :attributes="attributes" />
+    <br />
     <button v-on:click="send">Submit</button>
   </div>
 </template>
@@ -35,6 +74,7 @@ const options = {
 export default class Log extends Vue {
   mediaRecorder: any = {};
   audioChunks: Blob[] = [];
+  recordings: any[] = [];
   images: any[] = [];
   stream: any = null;
   audio: any = null;
@@ -42,13 +82,15 @@ export default class Log extends Vue {
   attributes: object[] = [];
   recording: boolean = false;
   feedback: string = "";
-  mounted() {
+  description: string = "Description is being loaded";
+  recordingid: number = 0;
+
+  async mounted() {
     this.attributes.push({ highlight: true, dates: this.date });
+    var res = await communicate.requestSurvey();
+    this.description = res.description;
   }
-  logout() {
-    localStorage.removeItem("token");
-    this.$router.push("Login");
-  }
+
   record() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       console.log("getUserMedia supported.");
@@ -64,8 +106,14 @@ export default class Log extends Vue {
           console.log("data available");
           this.audioChunks.push(event.data);
           if (!this.recording) {
+            this.recordings.push({
+              data: this.audioChunks,
+              id: this.recordingid
+            });
+            this.recordingid++;
             var audioBlob = new Blob(this.audioChunks, { type: "audio/mp3;" });
             const audioUrl = URL.createObjectURL(audioBlob);
+            this.audioChunks = [];
             const audio = new Audio(audioUrl);
             audio.crossOrigin = "anonymous";
             audio.play();
@@ -82,16 +130,28 @@ export default class Log extends Vue {
     this.stream.getTracks().forEach((track: any) => track.stop());
     this.mediaRecorder.stop();
   }
-  displayimages(event: any) {
-    var images: any[] = [];
+  async addImages(event: any) {
     for (var i = 0; i < event.target.files.length; i++) {
-      images.push(event.target.files[i]);
+      var imagefile = event.target.files[i];
+      var res = await this.imageToData(imagefile);
+      imagefile.image = res;
+      this.images.push(imagefile);
     }
-    this.images = images;
+  }
+  async imageToData(file: any) {
+    var reader = new FileReader();
+    return new Promise(resolve => {
+      reader.onload = (e: any) => {
+        resolve(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
   }
   async send() {
     var files: File[] = [];
     for (var i = 0; i < this.images.length; i++) {
+      var tempimg = this.images[i];
+      tempimg.image = undefined;
       var blob = await imageCompression(this.images[i], options);
       files.push(new File([blob], this.images[i].name));
     }
@@ -102,17 +162,29 @@ export default class Log extends Vue {
       });
       files.push(textfile);
     }
-    if (this.audioChunks.length > 0) {
-      const blob2 = new Blob(this.audioChunks, { type: "audio/mp3" });
-      const file = await this.blobToFile(blob2);
-      files.push(file);
+    if (this.recordings.length > 0) {
+      for (i = 0; i < this.recordings.length; i++) {
+        var blb = new Blob(this.recordings[i].data, { type: "audio/mp3" });
+        var file = await this.blobToFile(blb, this.recordings[i].id);
+        files.push(file);
+      }
     }
-    console.log(this.date);
-    await communicate.upload(files, this.date);
+    var date =
+      this.date.getDate() +
+      "-" +
+      (this.date.getMonth() + 1) +
+      "-" +
+      this.date.getFullYear();
+    await communicate.upload(files, date);
   }
-
-  async blobToFile(blob: Blob) {
-    var f: File = new File([blob], "recording.mp3");
+  deleteRecording(index: number) {
+    this.recordings.splice(index, 1);
+  }
+  deleteImage(index: number) {
+    this.images.splice(index, 1);
+  }
+  async blobToFile(blob: Blob, num: number) {
+    var f: File = new File([blob], `recording${num}.mp3`);
     return f;
   }
   dayClicked(day: any) {
@@ -124,4 +196,61 @@ export default class Log extends Vue {
 </script>
 
 <style scoped>
+.rec {
+  padding: 0;
+  width: 110px;
+  height: 40px;
+  line-height: 40px;
+  clear: both;
+  float: right;
+}
+.rec b {
+  float: left;
+  line-height: 40px;
+}
+.rec-disp,
+.img-disp {
+  overflow-x: scroll;
+  white-space: nowrap;
+  clear: both;
+  height: 100px;
+  width: 100vw;
+  border: 2px solid Black;
+}
+.rec-el {
+  padding: 2%;
+  margin: 1%;
+  height: 92%;
+  display: inline-block;
+  border: 1px black solid;
+  position: relative;
+}
+.rec-del,
+.img-del {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+.rec img {
+  float: right;
+  margin: 0;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+}
+.img-back {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+.img-el {
+  padding: 0%;
+  margin: 1%;
+  height: 90px;
+  width: 60px;
+  display: inline-block;
+  border: 1px black solid;
+  position: relative;
+  overflow: hidden;
+}
 </style>

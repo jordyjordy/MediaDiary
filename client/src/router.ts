@@ -20,9 +20,15 @@ const routes = [
         component: () => import('./views/Login.vue')
     },
     {
-        path: '/log',
-        name: 'Log',
-        component: () => import('./views/Log.vue'),
+        path: '/Home',
+        name: 'Home',
+        component: () => import('./views/Home.vue'),
+        children: [{
+            path: 'Log',
+            name: 'Log',
+            component: () => import('./views/Log.vue')
+        }
+        ],
         meta: { requiresAuth: true }
     }
 
@@ -45,7 +51,7 @@ router.beforeEach(async (to, from, next) => {
     } else {
         if (localStorage.getItem("token") != null) {
             if (to.path === "/" || to.path === '/register') {
-                next({ path: '/log' })
+                next({ path: '/Home/Log' })
             } else {
                 next()
             }

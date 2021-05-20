@@ -2,7 +2,6 @@ import pkg, { Client, PoolClient } from "pg"
 //@ts-ignore
 import pgtools from "pgtools"
 import { schema } from "./schema"
-console.log(process.env.DB_DATABASE)
 
 var prepare = async function () {
     try {
