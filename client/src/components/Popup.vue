@@ -44,6 +44,8 @@ export default class Popup extends Vue {
   margin-left: -100px;
   margin-top: -50px;
   background-color: white;
+  border: 1px solid gray;
+  border-radius: 1em;
 }
 .bottom-close {
   width: 100px;

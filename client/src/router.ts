@@ -27,6 +27,15 @@ const routes = [
             path: 'Log',
             name: 'Log',
             component: () => import('./views/Log.vue')
+        },
+        {
+            path: 'Profile',
+            name: 'Profile',
+            component: () => import('./views/Profile.vue')
+        }, {
+            path: 'Createsurvey',
+            name: "CreateSurvey",
+            component: () => import('./views/CreateSurvey.vue')
         }
         ],
         meta: { requiresAuth: true }

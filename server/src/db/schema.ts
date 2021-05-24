@@ -6,6 +6,8 @@ CREATE TABLE public.users
     email character varying(40),
     can_email boolean NOT NULL,
     consented boolean NOT NULL,
+    surveyor boolean NOT NULL DEFAULT false,
+    admin boolean NOT NULL DEFAULT false,
     CONSTRAINT users_pkey PRIMARY KEY (id),
     CONSTRAINT unique_email UNIQUE (username)
 )
@@ -70,6 +72,24 @@ TABLESPACE pg_default;
 
 ALTER TABLE public.userssurveys
     OWNER to ${process.env.DB_USER};
+
+CREATE TABLE public.questions
+(
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    survey_id integer NOT NULL,
+    text TEXT NOT NULL, 
+    CONSTRAINT fk_question_survey_id FOREIGN KEY(survey_id)
+        REFERENCES public.surveys (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+)
+
+TABLESPACE pg_default;
+
+
+ALTER TABLE public.questions
+    OWNER to ${process.env.DB_USER};
+
 
 CREATE TABLE public.answers
 (

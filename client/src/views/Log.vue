@@ -1,17 +1,17 @@
 <template>
-  <div>
+  <div class="log">
     <Popup :visible="showPopup" :message="popupText" @close="closePopup()" />
     <loading :active="isSending" :can-cancel="true" :is-full-page="true" />
     <p>{{description}}</p>
     <div class="rec-div">
       <p>Record a voice message:</p>
-      <button v-on:click="record">record</button>
-      <button v-on:click="stopRecording">stop recording</button>
-      <div class="rec">
+      <button class="rec-button" v-if="!recording" v-on:click="record">record audio</button>
+      <button v-if="recording" class="rec-button" v-on:click="stopRecording">stop recording</button>
+      <!--      <div class="rec">
         <b>recording:</b>
         <img v-if="recording" src="../assets/rec.svg" />
         <img v-if="!recording" src="../assets/rec-off.svg" />
-      </div>
+      </div>-->
       <div class="rec-disp">
         <div v-for="(recording,index) in recordings" :key="index" class="rec-el">
           RECORDING {{recording.id}}
@@ -36,11 +36,10 @@
         id="selectedFile"
         multiple
       />
-      <input
-        type="button"
-        value="Add Images"
+      <button
+        class="rec-button"
         onclick="document.getElementById('selectedFile').click();"
-      />
+      >Add Images</button>
       <div class="img-disp">
         <div v-for="(image,index) in images" :key="index" class="img-el">
           <img class="img-back" :src="image.image" />
@@ -103,11 +102,13 @@ export default class Log extends Vue {
   popupText: string = "dummy text";
   playback: boolean = false;
   playbackid: number = -1;
+  questions: string[] = [];
 
   async mounted() {
     this.attributes.push({ highlight: true, dates: this.date });
     var res = await communicate.requestSurvey();
     this.description = res.description;
+    this.questions = res.questions;
   }
 
   record() {
@@ -345,5 +346,14 @@ export default class Log extends Vue {
 }
 button {
   border-radius: 0.5em;
+}
+.rec-button {
+  height: 80px;
+  width: 160px;
+  font-size: 15pt;
+}
+.log {
+  max-width: 1000px;
+  margin: auto;
 }
 </style>

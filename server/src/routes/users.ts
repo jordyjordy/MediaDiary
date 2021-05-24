@@ -46,12 +46,39 @@ router.post('/login', async (req, res) => {
             var token = sign({ _id: result.rows[0].id, "email": req.params.email }, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_TIMEOUT })
             res.status(201).json({ token })
         } else {
-            res.status(401).send
+            res.status(401).send()
         }
         client.query("COMMIT")
     } catch (e) {
         client.query("ROLLBACK")
         res.status(401).json("bad credentials")
+    } finally {
+        client.release()
+    }
+})
+
+router.get('/emailpreferences', auth, async (req, res) => {
+    var tempreq: any = req
+    const client = await db.getClient();
+    try {
+        var emailpref = await client.query('SELECT can_email from users where id=$1', [tempreq.userData._id])
+        res.status(200).send(emailpref.rows[0].can_email)
+    } catch (err) {
+        res.status(500).send("Could not retrieve email preferences")
+    } finally {
+        client.release()
+    }
+})
+
+router.post('/updateprofile', auth, async (req, res) => {
+    var tempreq: any = req
+    const client = await db.getClient();
+    try {
+        await client.query('UPDATE users SET can_email=$1 WHERE id=$2', [req.body.canemail, tempreq.userData._id])
+        res.status(201).send("succes")
+
+    } catch (err) {
+        res.status(500).send("Could not Update userdata")
     } finally {
         client.release()
     }

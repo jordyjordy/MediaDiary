@@ -39,10 +39,24 @@ async function upload(files: any[], date: string) {
     })
     return res
 }
+async function requestEmailPref() {
+    var res = await axios.get(process.env.VUE_APP_SERVER_IP + "/users/emailpreferences", { headers: { Authorization: localStorage.getItem("token") } })
+    return res.data
+}
+
+async function updateEmailPref(can_email: boolean) {
+    var res = await axios.post(process.env.VUE_APP_SERVER_IP + "/users/updateprofile", { canemail: can_email }, { headers: { Authorization: localStorage.getItem("token") } })
+    return res.data
+}
+
 async function requestSurvey() {
     var res = await axios.get(process.env.VUE_APP_SERVER_IP + '/surveys/log', { headers: { Authorization: localStorage.getItem("token") } })
     return res.data
 }
 
-export default { login, register, verify, upload, requestSurvey }
-export { login, register, verify, upload, requestSurvey }
+async function submitSurvey(name: string, description: string, email: string, pub_key: string, questions: string[], start_date: string) {
+    var res = await axios.post(process.env.VUE_APP_SERVER_IP + '/surveys/create', { name: name, description: description, email: email, pub_key: pub_key, questions: questions, start_date: start_date }, { headers: { Authorization: localStorage.getItem("token") } })
+}
+
+export default { login, register, verify, upload, requestSurvey, requestEmailPref, updateEmailPref, submitSurvey }
+export { login, register, verify, upload, requestSurvey, requestEmailPref, updateEmailPref, submitSurvey }

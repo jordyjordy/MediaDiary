@@ -30,8 +30,7 @@ body {
   padding: 0px;
   overflow-x: hidden;
 }
-button,
-input {
+button {
   background-color: rgb(28, 99, 230);
   color: white;
   border: 1px white;
