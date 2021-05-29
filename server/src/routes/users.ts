@@ -14,8 +14,8 @@ router.post('/register', encrypt, async (req, res) => {
         await client.query('BEGIN')
         var result = await client.query('INSERT INTO users (username, email, can_email, consented) VALUES ($1, $2, $3, $4) returning id', [req.body.user, req.body.email, req.body.canemail, req.body.consented])
         await client.query('INSERT INTO passwords (user_id, password) VALUES ($1, $2)', [result.rows[0].id, req.body.password])
-        var surveyid = await client.query('SELECT id FROM surveys ORDER BY id LIMIT 1')
-        await client.query('INSERT INTO userssurveys (user_id,survey_id) VALUES ($1,$2)', [result.rows[0].id, surveyid.rows[0].id])
+        // var surveyid = await client.query('SELECT id FROM surveys ORDER BY id LIMIT 1')
+        // await client.query('INSERT INTO userssurveys (user_id,survey_id) VALUES ($1,$2)', [result.rows[0].id, surveyid.rows[0].id])
         await client.query('COMMIT')
         res.send('succes')
     } catch (e) {

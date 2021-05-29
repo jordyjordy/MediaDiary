@@ -2,53 +2,37 @@
   <div class="log">
     <Popup :visible="showPopup" :message="popupText" @close="closePopup()" />
     <loading :active="isSending" :can-cancel="true" :is-full-page="true" />
-    <p>{{description}}</p>
-    <div class="rec-div">
-      <p>Record a voice message:</p>
-      <button class="rec-button" v-if="!recording" v-on:click="record">record audio</button>
-      <button v-if="recording" class="rec-button" v-on:click="stopRecording">stop recording</button>
-      <!--      <div class="rec">
-        <b>recording:</b>
-        <img v-if="recording" src="../assets/rec.svg" />
-        <img v-if="!recording" src="../assets/rec-off.svg" />
-      </div>-->
-      <div class="rec-disp">
-        <div v-for="(recording,index) in recordings" :key="index" class="rec-el">
-          RECORDING {{recording.id}}
-          <br />
-          <button v-if="playbackid!=index" class="rec-play" @click="playRecording(index)">Listen</button>
-          <button
-            v-if="playbackid == index && playback"
-            class="rec-play"
-            @click="stopPlaying()"
-          >Stop</button>
-          <button class="rec-del" @click="deleteRecording(index)">Delete</button>
+    <p>{{ description }}</p>
+    <div class="answer-div">
+      <div class="images">
+        <p>Upload Image</p>
+        <input
+          type="file"
+          v-on:change="addImages($event)"
+          accept="image/*"
+          style="display:none;"
+          id="selectedFile"
+        />
+        <button
+          class="rec-button"
+          onclick="document.getElementById('selectedFile').click();"
+        >
+          Select Image
+        </button>
+        <div class="img-disp">
+          <img class="img-back" v-if="image.image" :src="image.image" />
         </div>
       </div>
-    </div>
-    <div class="images">
-      <p>Upload Images:</p>
-      <input
-        type="file"
-        v-on:change="addImages($event)"
-        accept="image/*"
-        style="display:none;"
-        id="selectedFile"
-        multiple
+
+      <Answer
+        v-for="(question, index) in questions"
+        :question="question"
+        :key="index"
+        :id="index"
+        ref="answer{{index}}"
       />
-      <button
-        class="rec-button"
-        onclick="document.getElementById('selectedFile').click();"
-      >Add Images</button>
-      <div class="img-disp">
-        <div v-for="(image,index) in images" :key="index" class="img-el">
-          <img class="img-back" :src="image.image" />
-          <button class="img-del" @click="deleteImage(index)">Delete</button>
-        </div>
-      </div>
     </div>
-    <p>Write some text:</p>
-    <textarea class="text-ar" v-model="feedback" />
+    <!-- <button class="submit">Add another image</button> -->
     <p>Pick the correct date</p>
     <Calendar class="center" @dayclick="dayClicked" :attributes="attributes" />
     <br />
@@ -61,48 +45,43 @@
 import { Component, Vue } from "vue-property-decorator";
 //@ts-ignore
 import Loading from "vue-loading-overlay";
+import Answer from "../components/Answer.vue";
+// import {Answer, QuestionPart} from "../util/answer"
 import Popup from "../components/Popup.vue";
 import "vue-loading-overlay/dist/vue-loading.css";
 import "materialize-css";
 import "materialize-css/dist/css/materialize.css";
-import { MediaRecorder } from "extendable-media-recorder";
 import communicate from "../util/communicate";
-import imageCompression from "browser-image-compression";
+// import imageCompression from "browser-image-compression";
 const Calendar = require("v-calendar/lib/components/calendar.umd");
 
-const options = {
-  maxSizeMB: 0.2,
-  maxWidthOrHeight: 1920,
-  useWebWorker: true,
-  initialQuality: 0.6
-};
+// const options = {
+//   maxSizeMB: 0.2,
+//   maxWidthOrHeight: 1920,
+//   useWebWorker: true,
+//   initialQuality: 0.6
+// };
 
 @Component({
   components: {
     Calendar,
     Loading,
-    Popup
+    Popup,
+    Answer
   }
 })
 export default class Log extends Vue {
-  mediaRecorder: any = {};
-  audioChunks: Blob[] = [];
-  recordings: any[] = [];
-  images: any[] = [];
-  stream: any = null;
-  audio: any = null;
+  image: any = { image: "" };
+
   date: Date = new Date();
   attributes: object[] = [];
-  recording: boolean = false;
-  feedback: string = "";
   description: string = "Description is being loaded";
-  recordingid: number = 0;
+
   isSending: boolean = false;
   showPopup: boolean = false;
   popupText: string = "dummy text";
-  playback: boolean = false;
-  playbackid: number = -1;
   questions: string[] = [];
+  answers: Answer[] = [];
 
   async mounted() {
     this.attributes.push({ highlight: true, dates: this.date });
@@ -111,41 +90,12 @@ export default class Log extends Vue {
     this.questions = res.questions;
   }
 
-  record() {
-    navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then((stream: MediaStream) => {
-        this.stream = stream;
-        this.mediaRecorder = new MediaRecorder(stream);
-        this.mediaRecorder.start();
-        this.recording = true;
-        this.mediaRecorder.addEventListener("dataavailable", (event: any) => {
-          this.audioChunks.push(event.data);
-          if (!this.recording) {
-            this.recordings.push({
-              data: this.audioChunks,
-              id: this.recordingid
-            });
-            this.audioChunks = [];
-            this.recordingid++;
-          }
-        });
-        this.mediaRecorder.addEventListener("stop", () => {
-          this.recording = false;
-        });
-      });
-  }
-  stopRecording() {
-    this.stream.getTracks().forEach((track: any) => track.stop());
-    this.mediaRecorder.stop();
-  }
   async addImages(event: any) {
-    for (var i = 0; i < event.target.files.length; i++) {
-      var imagefile = event.target.files[i];
-      var res = await this.imageToData(imagefile);
-      imagefile.image = res;
-      this.images.push(imagefile);
-    }
+    console.log("image added");
+    var imagefile = event.target.files[0];
+    var res = await this.imageToData(imagefile);
+    imagefile.image = res;
+    this.image = imagefile;
   }
   async imageToData(file: any) {
     var reader = new FileReader();
@@ -159,39 +109,19 @@ export default class Log extends Vue {
   async send() {
     this.isSending = true;
     var files: File[] = [];
-    for (var i = 0; i < this.images.length; i++) {
-      var tempimg = this.images[i];
-      tempimg.image = undefined;
-      var blob = await imageCompression(this.images[i], options);
-      files.push(new File([blob], this.images[i].name));
-    }
-    if (this.feedback !== "") {
-      var textblob = await new Blob([this.feedback], { type: "text/plain" });
-      var textfile = await new File([textblob], "feedback.txt", {
-        type: "text/plain"
-      });
-      files.push(textfile);
-    }
-    if (this.recordings.length > 0) {
-      for (i = 0; i < this.recordings.length; i++) {
-        var blb = new Blob(this.recordings[i].data, { type: "audio/mp3" });
-        var file = await this.blobToFile(blb, this.recordings[i].id);
-        files.push(file);
-      }
-    }
+    console.log("compressing images");
     var date =
       this.date.getDate() +
       "-" +
       (this.date.getMonth() + 1) +
       "-" +
       this.date.getFullYear();
+    console.log("uploading data");
     var res = await communicate.upload(files, date);
     this.showPopup = true;
     if (res.status && res.status == 200) {
       this.popupText = "Thank you for filling in the Survey!";
-      this.recordings = [];
-      this.images = [];
-      this.feedback = "";
+      this.image = null;
       this.date = new Date();
     } else if (res.toString().match(/406/i)) {
       this.popupText = "Something went wrong, are you sure you included data?";
@@ -204,11 +134,9 @@ export default class Log extends Vue {
     }
     this.isSending = false;
   }
-  deleteRecording(index: number) {
-    this.recordings.splice(index, 1);
-  }
-  deleteImage(index: number) {
-    this.images.splice(index, 1);
+
+  deleteImage() {
+    this.image = null;
   }
   async blobToFile(blob: Blob, num: number) {
     var f: File = new File([blob], `recording${num}.mp3`);
@@ -221,29 +149,6 @@ export default class Log extends Vue {
   }
   closePopup() {
     this.showPopup = false;
-  }
-  playRecording(index: number) {
-    this.stopPlaying();
-    var audioBlob = new Blob(this.recordings[index].data, {
-      type: "audio/mp3;"
-    });
-    const audioUrl = URL.createObjectURL(audioBlob);
-    this.audio = new Audio(audioUrl);
-    this.audio.crossOrigin = "anonymous";
-    this.audio.addEventListener("ended", () => {
-      this.stopPlaying();
-    });
-    this.audio.play();
-    this.playback = true;
-    this.playbackid = index;
-  }
-  stopPlaying() {
-    if (this.audio != null) {
-      this.audio.pause();
-      this.audio.currentTime = 0;
-      this.playback = false;
-      this.playbackid = -1;
-    }
   }
 }
 </script>
@@ -261,17 +166,15 @@ export default class Log extends Vue {
   float: left;
   line-height: 40px;
 }
-.rec-disp,
 .img-disp {
-  overflow-x: scroll;
   white-space: nowrap;
   clear: both;
   height: 110px;
-  width: calc(100%-2em);
+  width: 80px;
   border: 1px solid lightgray;
   border-radius: 1em;
-  margin: 1em;
-  padding: 0;
+  margin: 1em auto;
+  padding: 4px;
 }
 .rec-el {
   padding: 2%;
@@ -355,5 +258,12 @@ button {
 .log {
   max-width: 1000px;
   margin: auto;
+}
+.answer-div {
+  max-width: 1000px;
+  margin: auto;
+  border: 1px solid lightgray;
+  border-radius: 1em;
+  padding: 1em;
 }
 </style>

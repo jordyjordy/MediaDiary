@@ -17,12 +17,12 @@ router.post('/submit', auth, async (req, res) => {
         await client.query("BEGIN")
         var survey = await client.query('SELECT * FROM surveys LIMIT 1')
         var result = await mail.sendLog(temp, date, request.userData, survey.rows[0].response_email, survey.rows[0].public_key)
-        if (!result.err) {
+        if (!result!.err) {
             res.status(200).send()
         } else {
-            if (result.err === "no_email") {
+            if (result!.err === "no_email") {
                 res.status(500).send()
-            } else if (result.err === "no_files") {
+            } else if (result!.err === "no_files") {
                 res.status(406).send()
             }
         }

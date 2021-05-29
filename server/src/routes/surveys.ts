@@ -6,11 +6,16 @@ var router = express.Router()
 
 router.get('/log', auth, async (req, res) => {
     const client = await db.getClient();
+    try {
     var tempreq: any = req
     var survey = await client.query('SELECT survey_id FROM userssurveys ORDER BY survey_id LIMIT 1')
     var description = await client.query('SELECT description,public_key FROM surveys WHERE id=$1', [survey.rows[0].survey_id])
     var questions = await client.query('SELECT text FROM questions WHERE survey_id=$1', [survey.rows[0].survey_id])
     res.status(200).json({ description: description.rows[0].description, questions: questions.rows })
+    } catch(err) {
+        console.log(err)
+        res.status(500).json()
+    }
     client.release()
 })
 

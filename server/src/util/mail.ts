@@ -14,9 +14,26 @@ var mail = nodemailer.createTransport({
     }
 })
 
+const sendEmail = async function(attachments:object[],emailsubject:string,targetemail:string,html:string) {
+    var mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: targetemail,
+        subject: emailsubject,
+        html: html,
+        attachments: attachments
+    }
+    try {
+        var res = await mail.sendMail(mailOptions)
+        return { res: "success" }
+    } catch (err) {
+        console.log('could not send email')
+        console.log(err)
+        return { err: "no_email" }
+    }
+
+}
 
 const sendLog = async (files: any, date: string, userData: any, targetemail: string, public_key: string) => {
-    var attachments = []
     var pass = await token.generateToken()
     let archive = archiver.create('zip-encrypted', { zlib: { level: 8 }, encryptionMethod: 'aes256', password: pass })
     var key = new NodeRSA()
@@ -30,37 +47,69 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
         console.log('error')
         console.log(err)
     })
+    console.log("filling archive")
     if (!files) {
         return { err: "no_files" }
     }
-    else if (!files.length) {
+
+    let archived = false;
+    if (!files.length) {
+        console.log('Single file archive')
         archive.append(files.data, { name: files.name })
-    }
-    else {
-        for (var i = 0; i < files.length; i++) {
-            archive.append(files[i].data, { name: files[i].name })
+        archived = true
+    } else {
+        let sum = 0;
+        files.forEach((element:any) => {
+            sum += element.data.length
+        })
+        if(sum <= 2084009) {
+            console
+            for (var i = 0; i < files.length; i++) {
+                archive.append(files[i].data, { name: files[i].name })
+            }
+            archived = true
         }
     }
-    var res = await archive.finalize()
-    var tokenname = date + "_user-" + userData._id + ".txt"
-    attachments.push({ filename: tokenname, content: encryptedpass })
-    var filename = date + "_user-" + userData._id + ".zip"
-    attachments.push({ filename: filename, content: archive })
-    var emailsubject = "user: " + userData._id + " date: " + date
-    var mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: targetemail,
-        subject: emailsubject,
-        html: `here is the query for user ${userData._id} for ${date}`,
-        attachments: attachments
-    }
-    try {
-        var res = await mail.sendMail(mailOptions)
-        return { res: "success" }
-    } catch (err) {
-        console.log('could not send email')
-        console.log(err)
-        return { err: "no_email" }
+    if(archived) {
+        console.log(' finalizing archive')
+        var res = await archive.finalize()
+        var attachments = []
+        var tokenname = date + "_user-" + userData._id + ".txt"
+        attachments.push({ filename: tokenname, content: encryptedpass })
+        var filename = date + "_user-" + userData._id + ".zip"
+        attachments.push({ filename: filename, content: archive })
+        var emailsubject = "user: " + userData._id + " date: " + date
+        var html = `here is the query for user ${userData._id} for ${date}`
+        return await sendEmail(attachments,emailsubject,targetemail,html)
+    } else {
+        var attachments = []
+        let archive = archiver.create('zip-encrypted', { zlib: { level: 8 }, encryptionMethod: 'aes256', password: pass })
+        var datacount = 0
+        var archivecount = 0
+        for(var i = 0; i < files.length; i++) {
+            if(datacount + files[i].data.length >= 2084009) {
+                console.log("creating an extra zip file")
+                var res = await archive.finalize()
+                var tokenname = date + "_user-" + userData._id + "-" + (archivecount+1)  + ".txt"
+                var filename = date + "_user-" + userData._id + "-" + (archivecount+1)  + ".zip"
+                attachments.push({ filename: tokenname, content: encryptedpass })
+                attachments.push({ filename: filename, content: archive })
+                archive = archiver.create('zip-encrypted', { zlib: { level: 8 }, encryptionMethod: 'aes256', password: pass })
+                datacount = 0
+                archivecount++
+            }
+            archive.append(files[i].data, { name: files[i].name })
+            datacount += files[i].data.length
+        }
+        var res = await archive.finalize()
+        var tokenname = date + "_user-" + userData._id + "-" + (archivecount+1)  + ".txt"
+        var filename = date + "_user-" + userData._id + "-" + (archivecount+1)  + ".zip"
+        attachments.push({ filename: tokenname, content: encryptedpass })
+        attachments.push({ filename: filename, content: archive })
+        var emailsubject = "user: " + userData._id + " date: " + date
+        var html = `here is the query for user ${userData._id} for ${date}`
+        return await sendEmail(attachments,emailsubject,targetemail,html)
     }
 }
+
 export = { sendLog }
