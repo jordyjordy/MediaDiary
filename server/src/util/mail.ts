@@ -76,7 +76,7 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
         var attachments = []
         var tokenname = date + "_user-" + userData._id + ".txt"
         attachments.push({ filename: tokenname, content: encryptedpass })
-        var filename = date + "_user-" + userData._id + ".zip"
+        var filename = date + "_user-" + userData._id + "_" + counter + ".zip"
         attachments.push({ filename: filename, content: archive })
         var emailsubject = "user: " + userData._id + " date: " + date
         var html = `here is the query for user ${userData._id} for ${date}`
