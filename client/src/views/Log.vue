@@ -29,12 +29,18 @@
         :question="question"
         :key="index"
         :id="index"
-        ref="answer{{index}}"
+        ref="answer"
       />
     </div>
     <!-- <button class="submit">Add another image</button> -->
     <p>Pick the correct date</p>
-    <Calendar class="center" @dayclick="dayClicked" :attributes="attributes" />
+    <Calendar
+      class="center"
+      @dayclick="dayClicked"
+      :attributes="attributes"
+      :max-date="new Date()"
+      :min-date="start_date"
+    />
     <br />
     <button class="submit" v-on:click="send">Submit</button>
   </div>
@@ -52,15 +58,15 @@ import "vue-loading-overlay/dist/vue-loading.css";
 import "materialize-css";
 import "materialize-css/dist/css/materialize.css";
 import communicate from "../util/communicate";
-// import imageCompression from "browser-image-compression";
+import imageCompression from "browser-image-compression";
 const Calendar = require("v-calendar/lib/components/calendar.umd");
 
-// const options = {
-//   maxSizeMB: 0.2,
-//   maxWidthOrHeight: 1920,
-//   useWebWorker: true,
-//   initialQuality: 0.6
-// };
+const options = {
+  maxSizeMB: 0.2,
+  maxWidthOrHeight: 1920,
+  useWebWorker: true,
+  initialQuality: 0.6
+};
 
 @Component({
   components: {
@@ -76,7 +82,7 @@ export default class Log extends Vue {
   date: Date = new Date();
   attributes: object[] = [];
   description: string = "Description is being loaded";
-
+  start_date: Date = new Date();
   isSending: boolean = false;
   showPopup: boolean = false;
   popupText: string = "dummy text";
@@ -88,6 +94,7 @@ export default class Log extends Vue {
     var res = await communicate.requestSurvey();
     this.description = res.description;
     this.questions = res.questions;
+    this.start_date = new Date(res.start_date);
   }
 
   async addImages(event: any) {
@@ -109,6 +116,28 @@ export default class Log extends Vue {
   async send() {
     this.isSending = true;
     var files: File[] = [];
+    //@ts-ignore
+    for (let i = 0; i < this.$refs.answer.length; i++) {
+      //@ts-ignore
+      var response = await this.$refs.answer[i].sendData();
+      if (response.length <= 0) {
+        this.showPopup = true;
+        this.popupText = `Please answer all questions! Question ${i +
+          1} is still empty!`;
+        this.isSending = false;
+        return;
+      }
+      files = files.concat(response);
+    }
+    if (this.image.image === "") {
+      this.showPopup = true;
+      this.popupText = `Please submit an image!`;
+      this.isSending = false;
+      return;
+    }
+    var blob = await imageCompression(this.image, options);
+    files.push(new File([blob], "image.jpg"));
+
     console.log("compressing images");
     var date =
       this.date.getDate() +
@@ -121,8 +150,16 @@ export default class Log extends Vue {
     this.showPopup = true;
     if (res.status && res.status == 200) {
       this.popupText = "Thank you for filling in the Survey!";
-      this.image = null;
+      this.image = undefined;
+      this.image = { image: "" };
       this.date = new Date();
+      //@ts-ignore
+      for (let i = 0; i < this.$refs.answer.length; i++) {
+        //@ts-ignore
+        this.$refs.answer[i].clear();
+        //@ts-ignore
+        document.getElementById("selectedFile").value = "";
+      }
     } else if (res.toString().match(/406/i)) {
       this.popupText = "Something went wrong, are you sure you included data?";
     } else if (res.toString().match(/500/i)) {
@@ -143,6 +180,9 @@ export default class Log extends Vue {
     return f;
   }
   dayClicked(day: any) {
+    if (day.date < this.start_date || day.date > new Date()) {
+      return;
+    }
     this.date = day.date;
     this.attributes.pop();
     this.attributes.push({ highlight: true, dates: this.date });

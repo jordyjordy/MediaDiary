@@ -7,12 +7,12 @@ var router = express.Router()
 router.get('/log', auth, async (req, res) => {
     const client = await db.getClient();
     try {
-    var tempreq: any = req
-    var survey = await client.query('SELECT survey_id FROM userssurveys ORDER BY survey_id LIMIT 1')
-    var description = await client.query('SELECT description,public_key FROM surveys WHERE id=$1', [survey.rows[0].survey_id])
-    var questions = await client.query('SELECT text FROM questions WHERE survey_id=$1', [survey.rows[0].survey_id])
-    res.status(200).json({ description: description.rows[0].description, questions: questions.rows })
-    } catch(err) {
+        var tempreq: any = req
+        // var survey = await client.query('SELECT survey_id FROM userssurveys ORDER BY survey_id LIMIT 1')
+        var description = await client.query('SELECT description,start_date,id FROM surveys ORDER BY id ASC LIMIT 1')
+        var questions = await client.query('SELECT text FROM questions WHERE survey_id=$1', [description.rows[0].id])
+        res.status(200).json({ description: description.rows[0].description, questions: questions.rows, start_date: description.rows[0].start_date })
+    } catch (err) {
         console.log(err)
         res.status(500).json()
     }
@@ -33,6 +33,8 @@ router.post('/create', auth, async (req, res) => {
     } catch (err) {
         await client.query("ROLLBACK")
         res.sendStatus(401)
+    } finally {
+        client.release()
     }
 })
 

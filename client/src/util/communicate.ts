@@ -26,6 +26,7 @@ async function verify() {
 }
 
 async function upload(files: any[], date: string) {
+    console.log(`uploading ${files.length} files`)
     let formData = new FormData()
     for (var i = 0; i < files.length; i++) {
         formData.append("file", files[i])

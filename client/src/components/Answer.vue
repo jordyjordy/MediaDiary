@@ -45,7 +45,7 @@
 <script lang="ts">
 import { Prop, Component, Vue } from "vue-property-decorator";
 import { MediaRecorder } from "extendable-media-recorder";
-import { QuestionPart } from "../util/answer";
+// import { QuestionPart } from "../util/answer";
 
 @Component
 export default class Answer extends Vue {
@@ -138,12 +138,23 @@ export default class Answer extends Vue {
       });
       files.push(textfile);
     }
-    var data: QuestionPart = new QuestionPart(this.id, files);
-    this.$emit("sendData", data);
+    return files;
   }
   async blobToFile(blob: Blob, num: number) {
     var f: File = new File([blob], `question${this.id}-recording${num}.mp3`);
     return f;
+  }
+  clear() {
+    this.feedback = "";
+    this.audio = null;
+    this.recordings = [];
+    this.mediaRecorder = {};
+    this.audioChunks = [];
+    this.stream = null;
+    this.recording = false;
+    this.recordingid = 0;
+    this.playback = false;
+    this.playbackid = -1;
   }
 }
 </script>
