@@ -26,7 +26,6 @@ const sendEmail = async function (attachments: object[], emailsubject: string, t
         var res = await mail.sendMail(mailOptions)
         return { res: "success" }
     } catch (err) {
-        console.log('could not send email')
         console.log(err)
         return { err: "no_email" }
     }
@@ -47,14 +46,12 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
         console.log('error')
         console.log(err)
     })
-    console.log("filling archive")
     if (!files) {
         return { err: "no_files" }
     }
 
     let archived = false;
     if (!files.length) {
-        console.log('Single file archive')
         archive.append(files.data, { name: counter + '/' + files.name })
         archived = true
     } else {
@@ -62,7 +59,6 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
         files.forEach((element: any) => {
             sum += element.data.length
         })
-        console.log(sum)
         if (sum <= 2084009) {
             console
             for (var i = 0; i < files.length; i++) {
@@ -72,7 +68,6 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
         }
     }
     if (archived) {
-        console.log(' finalizing archive')
         var res = await archive.finalize()
         var attachments = []
         var tokenname = date + "_user-" + userData._id + "_" + counter + ".txt"
@@ -89,7 +84,6 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
         var archivecount = 0
         for (var i = 0; i < files.length; i++) {
             if (datacount + files[i].data.length >= 2084009) {
-                console.log("creating an extra zip file")
                 var res = await archive.finalize()
                 var tokenname = date + "_user-" + userData._id + "-" + (archivecount + 1) + "_" + counter + ".txt"
                 var filename = date + "_user-" + userData._id + "-" + (archivecount + 1) + "_" + counter + ".zip"

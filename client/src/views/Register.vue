@@ -109,14 +109,13 @@ export default class Register extends Vue {
       return;
     }
     if (this.password.length < 6) {
-      alert("please choose a longer password");
+      alert("please choose a password of at least 6 characters");
       return;
     }
     if (this.username.length < 5) {
-      alert("please choose a longer username");
+      alert("please choose a username of at least 5 characters");
       return;
     }
-    console.log("testing email");
     if (!this.validateEmail(this.email)) {
       alert("Please enter a valid email address");
       return;
