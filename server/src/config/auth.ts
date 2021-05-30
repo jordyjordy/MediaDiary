@@ -15,6 +15,7 @@ export = async (req: any, res: any, next: any) => {
             next()
         }
     } catch (err) {
+        console.log("authentication failed!")
         res.status(401).json("Authentication Failed")
     }
 

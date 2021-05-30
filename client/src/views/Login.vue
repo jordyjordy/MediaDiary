@@ -61,7 +61,6 @@ export default class Login extends Vue {
 
   async login() {
     var res = await communicate.login(this.user, this.password);
-    console.log(res.data);
     if (res.data === undefined || res.data.token === null) {
       this.showPopup = true;
       this.popupText =

@@ -7,6 +7,15 @@
     </label>
     <br />
     <button @click="update">Save</button>
+    <div class="dat-rem">
+      <br />
+      <label>
+        <button @click="removeData()">Request data removal</button>
+        <br />
+        <p>Clicking this will request to have all of your data removed from the survey and your account removed.</p>
+      </label>
+      <br />
+    </div>
   </div>
 </template>
 
@@ -43,6 +52,13 @@ export default class Profile extends Vue {
     this.showPopup = false;
     this.popupText = "";
   }
+  async removeData() {
+    var res = await communicate.requestDataRemoval();
+    if (res.status === 201) {
+      this.showPopup = true;
+      this.popupText = "A request to remove your data has been submitted";
+    }
+  }
 }
 </script>
 
@@ -58,5 +74,13 @@ input[type="checkbox"] {
   height: 20px;
   border: 1px black;
   outline: 1px black;
+}
+.dat-rem {
+  position: fixed;
+  bottom: 0;
+}
+button {
+  padding: 10px;
+  border-radius: 0.5em;
 }
 </style>

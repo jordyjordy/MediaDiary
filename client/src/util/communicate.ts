@@ -13,7 +13,6 @@ axios.interceptors.response.use(
 )
 
 async function login(user: string, pass: string) {
-    console.log(process.env.VUE_APP_SERVER_IP)
     var res = await axios.post(process.env.VUE_APP_SERVER_IP + '/users/login', { user: user, password: pass })
     return res
 }
@@ -27,7 +26,6 @@ async function verify() {
 }
 
 async function upload(files: any[], date: string) {
-    console.log(`uploading ${files.length} files`)
     let formData = new FormData()
     for (var i = 0; i < files.length; i++) {
         formData.append("file", files[i])
@@ -58,7 +56,12 @@ async function requestSurvey() {
 
 async function submitSurvey(name: string, description: string, email: string, pub_key: string, questions: string[], start_date: string) {
     var res = await axios.post(process.env.VUE_APP_SERVER_IP + '/surveys/create', { name: name, description: description, email: email, pub_key: pub_key, questions: questions, start_date: start_date }, { headers: { Authorization: localStorage.getItem("token") } })
+    return res
+}
+async function requestDataRemoval() {
+    var res = await axios.post(process.env.VUE_APP_SERVER_IP + '/users/dataremoval', {}, { headers: { Authorization: localStorage.getItem("token") } })
+    return res
 }
 
-export default { login, register, verify, upload, requestSurvey, requestEmailPref, updateEmailPref, submitSurvey }
-export { login, register, verify, upload, requestSurvey, requestEmailPref, updateEmailPref, submitSurvey }
+export default { login, register, verify, upload, requestSurvey, requestEmailPref, updateEmailPref, submitSurvey, requestDataRemoval }
+export { login, register, verify, upload, requestSurvey, requestEmailPref, updateEmailPref, submitSurvey, requestDataRemoval }

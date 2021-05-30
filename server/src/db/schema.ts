@@ -113,6 +113,22 @@ TABLESPACE pg_default;
 
 ALTER TABLE public.answers
     OWNER to ${process.env.DB_USER};
+
+CREATE TABLE public.dataremoval
+(
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    user_id integer NOT NULL,
+    request_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    CONSTRAINT removal_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_removal_user FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.dataremoval
+    OWNER to ${process.env.DB_USER};
 `
 
 export { schema }

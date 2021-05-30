@@ -58,10 +58,7 @@ export default class CreateSurvey extends Vue {
   attributes = [{ highlight: true, dates: new Date() }];
 
   removeQuestion(index: number) {
-    console.log("removing?");
-    console.log(this.questions.length);
     this.questions.splice(index, 1);
-    console.log(this.questions.length);
   }
   addQuestion() {
     this.questions.push("");
@@ -73,7 +70,7 @@ export default class CreateSurvey extends Vue {
       (this.attributes[0].dates.getMonth() + 1) +
       "-" +
       this.attributes[0].dates.getFullYear();
-    var res = await communicate.submitSurvey(
+    await communicate.submitSurvey(
       this.name,
       this.description,
       this.email,
@@ -81,7 +78,7 @@ export default class CreateSurvey extends Vue {
       this.questions,
       date
     );
-    console.log(res);
+    this.$router.push("/Home/Log");
   }
   dayClicked(day: any) {
     this.attributes.pop();

@@ -26,18 +26,16 @@ module.exports = async function () {
     var zip = new chilkat.Zip()
     files.forEach((file) => {
         if (file.match(re)) {
-            let name = file.slice(0, -4)
+            var directoryname = file.split("_")[0]
+            var name = file.slice(0, -4)
             let encrypted = fs.readFileSync(directory + '/' + name + ".txt", 'utf8')
             let pass = key.decrypt(encrypted, 'utf-8')
-            if (!fs.existsSync(directory + '/' + name)) {
-                fs.mkdirSync(directory + '/' + name)
-                zip.OpenZip(file)
-                zip.DecryptPassword = pass
-                zip.Unzip(directory + '/' + name)
-            } else {
-                console.log("folder already exists:" + name)
+            if (!fs.existsSync(directory + '/' + directoryname)) {
+                fs.mkdirSync(directory + '/' + directoryname)
             }
-
+            zip.OpenZip(file)
+            zip.DecryptPassword = pass
+            zip.Unzip(directory + '/' + directoryname)
         }
     })
 }

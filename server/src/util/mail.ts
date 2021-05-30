@@ -70,12 +70,12 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
     if (archived) {
         var res = await archive.finalize()
         var attachments = []
-        var tokenname = date + "_user-" + userData._id + "_" + counter + ".txt"
+        var tokenname = date + "-user-" + userData._id + "_1_" + counter + ".txt"
         attachments.push({ filename: tokenname, content: encryptedpass })
-        var filename = date + "_user-" + userData._id + "_" + counter + ".zip"
+        var filename = date + "-user-" + userData._id + "_1_" + counter + ".zip"
         attachments.push({ filename: filename, content: archive })
         var emailsubject = "user: " + userData._id + " date: " + date
-        var html = `here is the query for user ${userData._id} for ${date}`
+        var html = `here is a response from user ${userData._id} for ${date}`
         return await sendEmail(attachments, emailsubject, targetemail, html)
     } else {
         var attachments = []
@@ -85,8 +85,8 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
         for (var i = 0; i < files.length; i++) {
             if (datacount + files[i].data.length >= 2084009) {
                 var res = await archive.finalize()
-                var tokenname = date + "_user-" + userData._id + "-" + (archivecount + 1) + "_" + counter + ".txt"
-                var filename = date + "_user-" + userData._id + "-" + (archivecount + 1) + "_" + counter + ".zip"
+                var tokenname = date + "-user-" + userData._id + "_" + (archivecount + 1) + "_" + counter + ".txt"
+                var filename = date + "-user-" + userData._id + "_" + (archivecount + 1) + "_" + counter + ".zip"
                 attachments.push({ filename: tokenname, content: encryptedpass })
                 attachments.push({ filename: filename, content: archive })
                 archive = archiver.create('zip-encrypted', { zlib: { level: 8 }, encryptionMethod: 'aes256', password: pass })
@@ -97,8 +97,8 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
             datacount += files[i].data.length
         }
         var res = await archive.finalize()
-        var tokenname = date + "_user-" + userData._id + "-" + (archivecount + 1) + ".txt"
-        var filename = date + "_user-" + userData._id + "-" + (archivecount + 1) + ".zip"
+        var tokenname = date + "_user-" + userData._id + "-" + (archivecount + 1) + "_" + counter + ".txt"
+        var filename = date + "_user-" + userData._id + "-" + (archivecount + 1) + "_" + counter + ".zip"
         attachments.push({ filename: tokenname, content: encryptedpass })
         attachments.push({ filename: filename, content: archive })
         var emailsubject = "user: " + userData._id + " date: " + date
@@ -106,5 +106,38 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
         return await sendEmail(attachments, emailsubject, targetemail, html)
     }
 }
+const requestDataRemoval = async (id: number, email: string) => {
+    var emailsubject = "Data Removal Request for user " + id;
+    var html = "User " + id + " is requesting the removal of their data"
+    return await sendEmail([], emailsubject, email, html)
+}
 
-export = { sendLog }
+const sendReminders = async (emails: any[]) => {
+    var emailsubject = "MediaDiary-reminder"
+    var html = "A friendly reminder to fill in the mediadiary today :) <br> <br> If you want to stop receiving these emails you can update your preferences under the profile tab on the MediaDiary website."
+    var mailpool = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: 465,
+        pool: true,
+        secure: true,
+        maxMessages: Infinity,
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    })
+    var i = 0;
+    while (mailpool.isIdle() && i < emails.length) {
+        var mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: emails[i].email,
+            subject: emailsubject,
+            html: html,
+        }
+        i++
+        await mailpool.sendMail(mailOptions)
+    }
+    mailpool.close()
+}
+
+export = { sendLog, requestDataRemoval, sendReminders }

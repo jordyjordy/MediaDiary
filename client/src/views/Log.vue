@@ -96,7 +96,6 @@ export default class Log extends Vue {
   }
 
   async addImages(event: any) {
-    console.log("image added");
     var imagefile = event.target.files[0];
     var res = await this.imageToData(imagefile);
     imagefile.image = res;
@@ -135,15 +134,12 @@ export default class Log extends Vue {
     }
     var blob = await imageCompression(this.image, options);
     files.push(new File([blob], "image.jpg"));
-
-    console.log("compressing images");
     var date =
       this.date.getDate() +
       "-" +
       (this.date.getMonth() + 1) +
       "-" +
       this.date.getFullYear();
-    console.log("uploading data");
     var res = await communicate.upload(files, date);
     this.showPopup = true;
     if (res.status && res.status == 200) {
@@ -157,6 +153,7 @@ export default class Log extends Vue {
         this.$refs.answer[i].clear();
         //@ts-ignore
         document.getElementById("selectedFile").value = "";
+        window.scrollTo(0, 0);
       }
     } else if (res.toString().match(/406/i)) {
       this.popupText = "Something went wrong, are you sure you included data?";

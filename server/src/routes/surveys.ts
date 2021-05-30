@@ -25,6 +25,12 @@ router.post('/create', auth, async (req, res) => {
     const client = await db.getClient()
     try {
         await client.query("BEGIN")
+        var survey = await client.query('SELECT surveyor from users WHERE id=$1', [tempreq.userData._id])
+        if (!survey.rows[0].surveyor) {
+            res.sendStatus(401)
+            await client.query("ROLLBACK")
+            return
+        }
         await client.query('SET datestyle = dmy;')
         var id = await client.query("INSERT INTO surveys (owner_id, start_date, description,public_key,response_email) VALUES ($1,$2,$3,$4,$5) returning id", [tempreq.userData._id, req.body.start_date, req.body.description, req.body.pub_key, req.body.email])
         for (var i = 0; i < req.body.questions.length; i++) {

@@ -4,6 +4,7 @@ import { sign } from "jsonwebtoken"
 import auth from '../config/auth'
 import bcrypt from 'bcrypt'
 import encrypt from '../config/encrypt'
+import mail from '../util/mail'
 var router = express.Router()
 
 // TODO: 
@@ -79,6 +80,27 @@ router.post('/updateprofile', auth, async (req, res) => {
 
     } catch (err) {
         res.status(500).send("Could not Update userdata")
+    } finally {
+        client.release()
+    }
+})
+
+router.post('/dataremoval', auth, async (req, res) => {
+    var tempreq: any = req
+    const client = await db.getClient();
+    try {
+        await client.query("BEGIN")
+        var count = await client.query('select COUNT(*) from dataremoval where user_id = $1', [tempreq.userData._id])
+        if (count.rows[0].count <= 0) {
+            await client.query('insert into dataremoval (user_id) VALUES ($1)', [tempreq.userData._id])
+            var survey = await client.query('SELECT * FROM surveys ORDER BY id ASC LIMIT 1')
+            await mail.requestDataRemoval(tempreq.userData._id, survey.rows[0].response_email)
+            res.sendStatus(201)
+            await client.query("COMMIT")
+        }
+    } catch (err) {
+        await client.query("ROLLBACK")
+        res.sendStatus(500)
     } finally {
         client.release()
     }

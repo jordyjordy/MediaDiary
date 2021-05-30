@@ -4,6 +4,8 @@ import log from "./routes/log"
 import surveys from "./routes/surveys"
 import cors from "cors"
 import fileUpload from 'express-fileupload'
+import schedule from 'node-schedule'
+import reminders from './util/reminders'
 
 var app = express()
 app.use(fileUpload({ createParentPath: true }))
@@ -16,4 +18,11 @@ app.use('/surveys', surveys)
 var port = process.env.SERVER_PORT ? process.env.SERVER_PORT : 5000
 app.listen(port, () => {
     console.log("server listening on port " + port)
+})
+
+const rule = new schedule.RecurrenceRule();
+rule.hour = 19
+
+const job = schedule.scheduleJob(rule, function () {
+    reminders.sendReminders()
 })
