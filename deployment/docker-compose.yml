@@ -2,7 +2,7 @@ version: '3'
 services:
   client:
     container_name: "mediadiary-client"
-    image: mediadairy-client:latest
+    image: mediadiary-client:latest
     env_file: ".env"
     deploy:
       restart_policy:
