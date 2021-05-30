@@ -25,11 +25,11 @@ services:
   database:
     image: postgres:13-alpine
     environment:
-        - "POSTGRES_USER=postgres"
-        - "POSTGRES_PASSWORD=123456"
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: 123456
         ports:
-            - 5433:5432
+            - 5432:5432
 networks:
     default:
         external:
-            name: external-example
+            name: mediadiary-network
