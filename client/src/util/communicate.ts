@@ -13,6 +13,7 @@ axios.interceptors.response.use(
 )
 
 async function login(user: string, pass: string) {
+    console.log(process.env.VUE_APP_SERVER_IP)
     var res = await axios.post(process.env.VUE_APP_SERVER_IP + '/users/login', { user: user, password: pass })
     return res
 }

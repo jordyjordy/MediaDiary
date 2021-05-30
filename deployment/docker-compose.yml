@@ -22,3 +22,14 @@ services:
         window: 120s
     ports:
       - "${SERVERPORT}:5000"
+  database:
+    image: postgres:13-alpine
+    environment:
+        - "POSTGRES_USER=postgres"
+        - "POSTGRES_PASSWORD=123456"
+        ports:
+            - 5433:5432
+networks:
+    default:
+        external:
+            name: external-example
