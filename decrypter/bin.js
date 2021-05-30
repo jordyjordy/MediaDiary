@@ -1,0 +1,3 @@
+const decrypt = require('.')
+
+decrypt()

@@ -62,6 +62,7 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
         files.forEach((element: any) => {
             sum += element.data.length
         })
+        console.log(sum)
         if (sum <= 2084009) {
             console
             for (var i = 0; i < files.length; i++) {
@@ -74,7 +75,7 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
         console.log(' finalizing archive')
         var res = await archive.finalize()
         var attachments = []
-        var tokenname = date + "_user-" + userData._id + ".txt"
+        var tokenname = date + "_user-" + userData._id + "_" + counter + ".txt"
         attachments.push({ filename: tokenname, content: encryptedpass })
         var filename = date + "_user-" + userData._id + "_" + counter + ".zip"
         attachments.push({ filename: filename, content: archive })
@@ -90,8 +91,8 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
             if (datacount + files[i].data.length >= 2084009) {
                 console.log("creating an extra zip file")
                 var res = await archive.finalize()
-                var tokenname = date + "_user-" + userData._id + "-" + (archivecount + 1) + ".txt"
-                var filename = date + "_user-" + userData._id + "-" + (archivecount + 1) + ".zip"
+                var tokenname = date + "_user-" + userData._id + "-" + (archivecount + 1) + "_" + counter + ".txt"
+                var filename = date + "_user-" + userData._id + "-" + (archivecount + 1) + "_" + counter + ".zip"
                 attachments.push({ filename: tokenname, content: encryptedpass })
                 attachments.push({ filename: filename, content: archive })
                 archive = archiver.create('zip-encrypted', { zlib: { level: 8 }, encryptionMethod: 'aes256', password: pass })
