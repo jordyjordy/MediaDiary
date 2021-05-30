@@ -3,41 +3,23 @@
     <p>{{ q.text }}</p>
     <div class="rec-div">
       <p>Record a voice message:</p>
-      <button class="rec-button" v-if="!recording" v-on:click="record">
-        record audio
-      </button>
-      <button v-if="recording" class="rec-button" v-on:click="stopRecording">
-        stop recording
-      </button>
+      <button class="rec-button" v-if="!recording" v-on:click="record">record audio</button>
+      <button v-if="recording" class="rec-button" v-on:click="stopRecording">stop recording</button>
       <div class="rec-disp">
-        <div
-          v-for="(recording, index) in recordings"
-          :key="index"
-          class="rec-el"
-        >
+        <div v-for="(recording, index) in recordings" :key="index" class="rec-el">
           RECORDING {{ recording.id }}
           <br />
-          <button
-            v-if="playbackid != index"
-            class="rec-play"
-            @click="playRecording(index)"
-          >
-            Listen
-          </button>
+          <button v-if="playbackid != index" class="rec-play" @click="playRecording(index)">Listen</button>
           <button
             v-if="playbackid == index && playback"
             class="rec-play"
             @click="stopPlaying()"
-          >
-            Stop
-          </button>
-          <button class="rec-del" @click="deleteRecording(index)">
-            Delete
-          </button>
+          >Stop</button>
+          <button class="rec-del" @click="deleteRecording(index)">Delete</button>
         </div>
       </div>
     </div>
-    <p>Write some text:</p>
+    <p>Or write some text:</p>
     <textarea class="text-ar" v-model="feedback" />
   </div>
 </template>
