@@ -31,8 +31,9 @@ router.post('/create', auth, async (req, res) => {
         await client.query("COMMIT")
         res.sendStatus(201)
     } catch (err) {
+        console.log(err)
         await client.query("ROLLBACK")
-        res.sendStatus(401)
+        res.sendStatus(500)
     } finally {
         client.release()
     }
