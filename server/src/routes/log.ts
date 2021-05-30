@@ -16,6 +16,7 @@ router.post('/submit', auth, async (req, res) => {
 
     try {
         await client.query("BEGIN")
+        await client.query('SET datestyle = dmy;')
         var survey = await client.query('SELECT * FROM surveys ORDER BY id ASC LIMIT 1')
         await client.query('INSERT INTO answers (user_id,survey_id,path,answer_date) VALUES ($1,$2,$3,$4)', [request.userData._id, survey.rows[0].id, "-", date])
         var answers = await client.query('SELECT COUNT(*) FROM answers WHERE user_id = $1 AND survey_id = $2 AND answer_date = $3', [request.userData._id, survey.rows[0].id, date])
