@@ -148,6 +148,9 @@ export default class Answer extends Vue {
   border-bottom: 1px solid lightgray;
   padding: 1em;
 }
+.answer:last-child {
+  border: none;
+}
 .rec-disp {
   white-space: nowrap;
   clear: both;

@@ -16,7 +16,7 @@
               />
             </div>
             <div class="col s10 push-s1">
-              <label for="email">(optional) email</label>
+              <label for="email">email</label>
               <input
                 placeholder="example@example.com"
                 id="email"
@@ -98,6 +98,10 @@ export default class Register extends Vue {
   passwordcheck = "";
   allowemails = false;
   consent = false;
+  validateEmail(email) {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  }
 
   async register() {
     if (this.passwordcheck != this.password) {
@@ -112,13 +116,10 @@ export default class Register extends Vue {
       alert("please choose a longer username");
       return;
     }
-    const re = /^(([^<>()[].,;:\s@"]+(.[^<>()[].,;:\s@"]+)*)|(".+"))@(([^<>()[].,;:\s@"]+.)+[^<>()[].,;:\s@"]{2,})$/i;
-    if (this.email !== "") {
-      console.log("testing email");
-      if (!re.test(String(this.email).toLowerCase())) {
-        alert("Please enter a valid email address or none at all");
-        return;
-      }
+    console.log("testing email");
+    if (!this.validateEmail(this.email)) {
+      alert("Please enter a valid email address");
+      return;
     }
     if (!this.consent) {
       alert(

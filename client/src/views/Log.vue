@@ -16,9 +16,7 @@
         <button
           class="rec-button"
           onclick="document.getElementById('selectedFile').click();"
-        >
-          Select Image
-        </button>
+        >Select Image</button>
         <div class="img-disp">
           <img class="img-back" v-if="image.image" :src="image.image" />
         </div>
@@ -194,6 +192,10 @@ export default class Log extends Vue {
 </script>
 
 <style scoped>
+.images {
+  border-bottom: 1px solid lightgray;
+  padding: 1em;
+}
 .rec {
   padding: 0;
   width: 110px;

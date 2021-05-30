@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Popup :visible="showPopup" :message="popupText" @close="closePopup()" />
     <img class="logo" src="../assets/logo.svg" />
     <HelloWorld msg="Welcome to the MediaDiary App" />
     <div class="row">
@@ -40,6 +41,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import Popup from "../components/Popup.vue";
 import HelloWorld from "../components/HelloWorld.vue";
 import "materialize-css";
 import "materialize-css/dist/css/materialize.css";
@@ -47,21 +49,34 @@ import communicate from "../util/communicate";
 
 @Component({
   components: {
-    HelloWorld
+    HelloWorld,
+    Popup
   }
 })
 export default class Login extends Vue {
   user: string = "";
   password: string = "";
+  showPopup: boolean = false;
+  popupText: string = "";
+
   async login() {
     var res = await communicate.login(this.user, this.password);
-    if (res.data.token != null) {
+    console.log(res.data);
+    if (res.data === undefined || res.data.token === null) {
+      this.showPopup = true;
+      this.popupText =
+        "Something went wrong logging in, are you sure you have the correct credentials?";
+    } else {
       localStorage.setItem("token", res.data.token);
       this.$router.push("/Home/Log");
     }
   }
   register() {
     this.$router.push("Register");
+  }
+  closePopup() {
+    this.showPopup = false;
+    this.popupText = "";
   }
 }
 </script>
