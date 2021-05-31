@@ -176,12 +176,17 @@ export default class Log extends Vue {
     return f;
   }
   dayClicked(day: any) {
-    if (day.date < this.start_date || day.date > new Date()) {
+    if (
+      day.date.getDate() < this.start_date.getDate() ||
+      day.date.getMonth() < this.start_date.getMonth() ||
+      day.date.getFullYear() < this.start_date.getFullYear() ||
+      day.date > new Date()
+    ) {
       return;
     }
     this.date = day.date;
     this.attributes.pop();
-    this.attributes.push({ highlight: "#2196f3", dates: this.date });
+    this.attributes.push({ highlight: true, dates: this.date });
   }
   closePopup() {
     this.showPopup = false;
