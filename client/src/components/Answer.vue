@@ -1,6 +1,8 @@
 <template>
   <div class="answer">
-    <p>{{ q.text }}</p>
+    <p>
+      <b>{{ q.text }}</b>
+    </p>
     <div class="rec-div">
       <p>Record a voice message:</p>
       <button class="rec-button" v-if="!recording" v-on:click="record">record audio</button>
@@ -145,7 +147,7 @@ export default class Answer extends Vue {
 .answer {
   max-width: 1000px;
   margin: auto;
-  border-bottom: 1px solid lightgray;
+  border-bottom: 2px solid white;
   padding: 1em;
 }
 .answer:last-child {
@@ -153,16 +155,14 @@ export default class Answer extends Vue {
 }
 .rec-disp {
   white-space: nowrap;
+  overflow-y: scroll;
   clear: both;
   height: 110px;
   width: calc(100% - 2em);
-  border: 1px solid lightgray;
-  border-radius: 1em;
+  border: 1px solid white;
   margin: 1em;
   padding: 4px;
-}
-button {
-  border-radius: 0.5em;
+  background-color: white;
 }
 .rec-button {
   height: 80px;
@@ -172,21 +172,20 @@ button {
 .text-ar {
   margin: 3%;
   width: 94%;
-  border: 1px solid lightgray;
-  border-radius: 1em;
+  border: 1px solid white;
   height: 20vh;
   overflow-y: scroll;
   resize: none;
+  background-color: white;
 }
 .rec-el {
   padding: 0;
-  margin: 0;
+  margin: 0.3em;
   height: 90px;
   width: 120px;
   display: inline-block;
   border: 1px gray solid;
   background-color: rgb(228, 228, 228);
   position: relative;
-  border-radius: 1em;
 }
 </style>

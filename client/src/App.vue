@@ -31,7 +31,7 @@ body {
   overflow-x: hidden;
 }
 button {
-  background-color: rgb(28, 99, 230);
+  background-color: #2196f3;
   color: white;
   border: 1px white;
   border-style: double;

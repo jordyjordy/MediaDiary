@@ -78,9 +78,11 @@ input[type="checkbox"] {
 .dat-rem {
   position: fixed;
   bottom: 0;
+  max-width: 100vw;
+  width: 20em;
+  left: calc(50% - 10em);
 }
 button {
-  padding: 10px;
-  border-radius: 0.5em;
+  padding: 1em;
 }
 </style>

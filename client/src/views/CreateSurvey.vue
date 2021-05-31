@@ -1,6 +1,6 @@
 <template>
   <div class="menu">
-    <p>Create a new survey!</p>
+    <h5>Create a new survey!</h5>
     <div class="survey-entry">
       <label>
         <span>Survey Name:</span>
@@ -22,7 +22,9 @@
       <textarea v-model="pub_key"></textarea>
     </label>
     <div class="questions">
-      <span>Questions</span>
+      <span>
+        <b>Questions</b>
+      </span>
       <div class="question-scroll">
         <div class="question-div" v-for="(question,index) in questions" :key="index">
           <span>Question:</span>
@@ -89,14 +91,17 @@ export default class CreateSurvey extends Vue {
 
 <style scoped>
 .menu {
+  padding-top: 0.01em;
   margin: auto;
   max-width: 1000px;
+  background-color: #cfe7f8;
+  box-shadow: 0.5px 3px 5px rgba(45, 65, 77, 0.479);
 }
 #name,
 #email {
-  border: 1px solid lightgray;
+  border: 1px solid gray;
   margin-right: 10px;
-  border-radius: 1em;
+  background-color: white;
 }
 textarea {
   background-color: white;
@@ -107,22 +112,21 @@ textarea {
 textarea {
   margin: 3%;
   width: 94%;
-  border: 1px solid lightgray;
-  border-radius: 1em;
+  border: 1px solid gray;
   height: 20vh;
   overflow-y: scroll;
   resize: none;
 }
 .questions {
-  border: 1px solid lightgray;
+  border: 2px solid white;
+  margin: 4px;
 }
 .question-scroll {
   margin: 5px;
-  border: 1px solid lightgray;
 }
 .question-div {
   margin: 5px;
-  border: 1px solid lightgray;
+  border: 2px solid white;
 }
 .submit {
   height: 80px;
@@ -130,6 +134,6 @@ textarea {
   font-size: 20pt;
 }
 button {
-  border-radius: 0.5em;
+  padding: 0.5em;
 }
 </style>

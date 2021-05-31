@@ -7,15 +7,14 @@ var router = express.Router()
 router.get('/log', auth, async (req, res) => {
     const client = await db.getClient();
     try {
-        var tempreq: any = req
+        //var tempreq: any = req
         await client.query('SET datestyle = dmy;')
         // var survey = await client.query('SELECT survey_id FROM userssurveys ORDER BY survey_id LIMIT 1')
         var description = await client.query('SELECT description,start_date,id FROM surveys ORDER BY id ASC LIMIT 1')
         var questions = await client.query('SELECT text FROM questions WHERE survey_id=$1', [description.rows[0].id])
         res.status(200).json({ description: description.rows[0].description, questions: questions.rows, start_date: description.rows[0].start_date })
     } catch (err) {
-        console.log(err)
-        res.status(500).json()
+        res.status(200).json({ description: "No survey found", questions: [], start_date: new Date() })
     }
     client.release()
 })

@@ -26,7 +26,7 @@ export default class NavBar extends Vue {
 <style scoped>
 .navbar {
   margin-top: 0;
-  background-color: rgb(28, 99, 230);
+  background-color: #1565c0;
   width: 100vw;
   height: 40pt;
   padding-left: 5vw;
@@ -45,7 +45,6 @@ export default class NavBar extends Vue {
   margin-top: 4pt;
 }
 button {
-  border-radius: 0.5em;
   margin: 3px;
 }
 </style>

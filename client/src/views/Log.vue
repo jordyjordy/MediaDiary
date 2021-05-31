@@ -2,10 +2,11 @@
   <div class="log">
     <Popup :visible="showPopup" :message="popupText" @close="closePopup()" />
     <loading :active="isSending" :can-cancel="true" :is-full-page="true" />
+    <h5>Survey Description</h5>
     <p>{{ description }}</p>
     <div class="answer-div">
       <div class="images">
-        <p>Upload Image</p>
+        <p>Upload an image</p>
         <input
           type="file"
           v-on:change="addImages($event)"
@@ -180,7 +181,7 @@ export default class Log extends Vue {
     }
     this.date = day.date;
     this.attributes.pop();
-    this.attributes.push({ highlight: true, dates: this.date });
+    this.attributes.push({ highlight: "#2196f3", dates: this.date });
   }
   closePopup() {
     this.showPopup = false;
@@ -190,7 +191,7 @@ export default class Log extends Vue {
 
 <style scoped>
 .images {
-  border-bottom: 1px solid lightgray;
+  border-bottom: 2px solid white;
   padding: 1em;
 }
 .rec {
@@ -210,8 +211,8 @@ export default class Log extends Vue {
   clear: both;
   height: 110px;
   width: 80px;
-  border: 1px solid lightgray;
-  border-radius: 1em;
+  border: 1px solid gray;
+  background-color: white;
   margin: 1em auto;
   padding: 4px;
 }
@@ -274,21 +275,21 @@ export default class Log extends Vue {
 .text-ar {
   margin: 3%;
   width: 94%;
-  border: 1px solid lightgray;
+  border: 1px solid gray;
   border-radius: 1em;
   height: 20vh;
   overflow-y: scroll;
   resize: none;
+  background-color: white;
 }
 
 .submit {
   height: 80px;
   width: 200px;
   font-size: 20pt;
+  margin: 0.2em;
 }
-button {
-  border-radius: 0.5em;
-}
+
 .rec-button {
   height: 80px;
   width: 160px;
@@ -299,10 +300,10 @@ button {
   margin: auto;
 }
 .answer-div {
+  background-color: #cfe7f8;
   max-width: 1000px;
-  margin: auto;
-  border: 1px solid lightgray;
-  border-radius: 1em;
+  margin: 2%;
   padding: 1em;
+  box-shadow: 0.5px 3px 5px rgba(45, 65, 77, 0.479);
 }
 </style>

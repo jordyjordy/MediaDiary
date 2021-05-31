@@ -18,12 +18,16 @@
             </div>
             <div class="col s12 push-s1 push-m1 m12 l6 push-l1">
               <div class="row">
-                <a class="btn waves-effect waves-light col blue s4" name="login" v-on:click="login">
+                <a
+                  class="btn waves-effect waves-light col blue lighten-2 s4"
+                  name="login"
+                  v-on:click="login"
+                >
                   Log In
                   <i class="material-icons right">send</i>
                 </a>
                 <a
-                  class="waves-effect waves-light btn col blue s5 push-s1"
+                  class="waves-effect waves-light btn col blue lighten-2 s5 push-s1"
                   name="register"
                   v-on:click="register"
                 >
