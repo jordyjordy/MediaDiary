@@ -47,6 +47,8 @@
               />
             </div>
             <div class="col s10 push-s1">
+              <p class="warning">Please don't lose your password, there is no way of recovering it.</p>
+              <br />
               <p
                 class="description"
               >Reminders can be sent to help remind you to fill in the survey, this can be disabled afterwards as well</p>
@@ -142,6 +144,10 @@ export default class Register extends Vue {
 }
 </script>
 <style scoped>
+.warning {
+  color: lightgray;
+  font-size: 9pt;
+}
 .description {
   color: white;
 }

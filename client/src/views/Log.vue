@@ -2,8 +2,13 @@
   <div class="log">
     <Popup :visible="showPopup" :message="popupText" @close="closePopup()" />
     <loading :active="isSending" :can-cancel="true" :is-full-page="true" />
-    <h5>Survey Description</h5>
-    <p>{{ description }}</p>
+    <div class="description-flex" @click="toggleDescription()">
+      <div class="description-header">
+        <h5 class="header">Survey Description</h5>
+      </div>
+      <img class="dropdown-arrow" src="../assets/icon-arrow-down.svg" />
+    </div>
+    <p class="accordion">{{ description }}</p>
     <div class="answer-div">
       <div class="images">
         <p>Upload an image</p>
@@ -191,6 +196,17 @@ export default class Log extends Vue {
   closePopup() {
     this.showPopup = false;
   }
+  toggleDescription() {
+    var acc = document.getElementsByClassName("accordion");
+    var arrow = document.getElementsByClassName("dropdown-arrow");
+    for (let i = 0; i < acc.length; i++) {
+      acc[i].classList.toggle("open");
+    }
+    for (let i = 0; i < arrow.length; i++) {
+      console.log("turning arrow");
+      arrow[i].classList.toggle("open");
+    }
+  }
 }
 </script>
 
@@ -310,5 +326,33 @@ export default class Log extends Vue {
   margin: 2%;
   padding: 1em;
   box-shadow: 0.5px 3px 5px rgba(45, 65, 77, 0.479);
+}
+.description-flex {
+  width: 17em;
+  margin: auto;
+  display: inline-flex;
+  flex-direction: row;
+}
+.dropdown-arrow {
+  display: block;
+  width: 2rem;
+  height: 1rem;
+  margin: auto 5px;
+  padding-top: 5px;
+  color: gray;
+  transition: all 0.2s;
+}
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+.accordion {
+  display: none;
+  visibility: hidden;
+  white-space: pre-wrap;
+  transition: visibility 0.2s;
+}
+.accordion.open {
+  display: block;
+  visibility: visible;
 }
 </style>
