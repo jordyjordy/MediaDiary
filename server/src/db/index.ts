@@ -15,9 +15,6 @@ const pool = new Pool({
     port: parseInt(process.env.DB_PORT!)
 }
 )
-interface ClientAction {
-    (err: object, client: PoolClient, done: any): void
-}
 
 var query = (text: string, params: String[], callback: any) => {
     if (!prepare) {

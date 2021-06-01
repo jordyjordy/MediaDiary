@@ -14,6 +14,7 @@ const sendReminders = async () => {
     const emails = await client.query('select email from users where can_email = true AND id NOT IN (select user_id from answers where answer_date = $1)', [datetext])
     await mail.sendReminders(emails.rows)
     console.log("reminders sent!")
+    client.release()
 }
 
 export = { sendReminders }

@@ -22,6 +22,7 @@ app.listen(port, () => {
 
 const rule = new schedule.RecurrenceRule();
 rule.hour = 19
+rule.minute = 1
 
 const job = schedule.scheduleJob(rule, function () {
     reminders.sendReminders()
