@@ -16,15 +16,12 @@ you can generate a key with the command `ssh-keygen -t rsa -b 4096`
 
 Afterwards you have to specify the location and name of the keypair, although a default is provided.
 
-![1622405000743](C:\Users\jordy\AppData\Roaming\Typora\typora-user-images\1622405000743.png)
 
 Doing this two files will be generated. in the above example an `example_key` file and an `example_key.pub` file will be generated. the `.pub` file contains the public key which can be used on the MediaDiary app. The `example_key` file (without .pub) is the private key, you should not share this with anyone, and it should not leave the computer you generated it on, as this reduces the security of the private key.
 
 #### Making a survey with the public key
 
 When making a survey the public key is necessary, the public key file can be opened with a text editor, then you can simply copy paste the key into the public SSH key field. 
-
-![1622405305793](C:\Users\jordy\AppData\Roaming\Typora\typora-user-images\1622405305793.png)
 
 Make sure to leave no extra spaces or new lines behind the key, this could potentially change the key and mess up encryption. 
 
@@ -46,12 +43,4 @@ A tool has been created to simplify the decryption of the responses: mediadiary-
 
 5. Enter the name of your private key file
 
-   ![1622405733933](C:\Users\jordy\AppData\Roaming\Typora\typora-user-images\1622405733933.png)
-
 Now the executable will create a folder for each user and date, containing the responses for that user on that day
-
-![1622405805717](C:\Users\jordy\AppData\Roaming\Typora\typora-user-images\1622405805717.png)
-
-
-
-![1622405777717](C:\Users\jordy\AppData\Roaming\Typora\typora-user-images\1622405777717.png)
