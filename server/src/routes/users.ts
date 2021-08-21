@@ -4,7 +4,7 @@ import { sign } from "jsonwebtoken"
 import auth from '../config/auth'
 import bcrypt from 'bcrypt'
 import encrypt from '../config/encrypt'
-import mail from '../util/mail'
+import { requestDataRemoval } from '../util/mail'
 var router = express.Router()
 
 // TODO: 
@@ -94,7 +94,7 @@ router.post('/dataremoval', auth, async (req, res) => {
         if (count.rows[0].count <= 0) {
             await client.query('insert into dataremoval (user_id) VALUES ($1)', [tempreq.userData._id])
             var survey = await client.query('SELECT * FROM surveys ORDER BY id ASC LIMIT 1')
-            await mail.requestDataRemoval(tempreq.userData._id, survey.rows[0].response_email)
+            await requestDataRemoval(tempreq.userData._id, survey.rows[0].response_email)
             res.sendStatus(201)
             await client.query("COMMIT")
         }

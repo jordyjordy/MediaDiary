@@ -13,8 +13,8 @@ var prepare = async function () {
         }, process.env.DB_DATABASE)
         createSchema()
     }
-    catch (error) {
-        if (error.name == "duplicate_database") {
+    catch (err: any) {
+        if (err.name == "duplicate_database") {
             console.log("database already exists, so schema should be correct")
         }
     }
