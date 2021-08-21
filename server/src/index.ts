@@ -5,7 +5,7 @@ import surveys from "./routes/surveys"
 import cors from "cors"
 import fileUpload from 'express-fileupload'
 import schedule from 'node-schedule'
-import reminders from './util/reminders'
+import { sendReminders } from './util/reminders'
 
 var app = express()
 app.use(fileUpload({ createParentPath: true }))
@@ -25,5 +25,5 @@ rule.hour = 19
 rule.minute = 1
 
 const job = schedule.scheduleJob(rule, function () {
-    reminders.sendReminders()
+    sendReminders()
 })

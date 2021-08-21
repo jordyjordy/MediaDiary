@@ -32,7 +32,7 @@ const sendEmail = async function (attachments: object[], emailsubject: string, t
 
 }
 
-const sendLog = async (files: any, date: string, userData: any, targetemail: string, public_key: string, counter: number) => {
+export const sendLog = async (files: any, date: string, userData: any, targetemail: string, public_key: string, counter: number) => {
     var pass = await token.generateToken()
     let archive = archiver.create('zip-encrypted', { zlib: { level: 8 }, encryptionMethod: 'aes256', password: pass })
     var key = new NodeRSA()
@@ -106,13 +106,13 @@ const sendLog = async (files: any, date: string, userData: any, targetemail: str
         return await sendEmail(attachments, emailsubject, targetemail, html)
     }
 }
-const requestDataRemoval = async (id: number, email: string) => {
+export const requestDataRemoval = async (id: number, email: string) => {
     var emailsubject = "Data Removal Request for user " + id;
     var html = "User " + id + " is requesting the removal of their data"
     return await sendEmail([], emailsubject, email, html)
 }
 
-const sendReminders = async (emails: any[]) => {
+export const sendReminders = async (emails: any[]) => {
     var emailsubject = "MediaDiary-reminder"
     var html = "A friendly reminder to fill in the mediadiary today :) <br> <br> If you want to stop receiving these emails you can update your preferences under the profile tab on the MediaDiary website."
     var mailpool = nodemailer.createTransport({
@@ -140,4 +140,4 @@ const sendReminders = async (emails: any[]) => {
     mailpool.close()
 }
 
-export = { sendLog, requestDataRemoval, sendReminders }
+// export = { sendLog, requestDataRemoval, sendReminders }
